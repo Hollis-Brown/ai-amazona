@@ -1,36 +1,29 @@
 import NextAuth, { DefaultSession } from 'next-auth'
-import prisma from '@/lib/prisma'
+import { PrismaClient } from '@prisma/client'
+import authConfig from './auth.config'
 import bcrypt from 'bcryptjs'
-import GitHub from 'next-auth/providers/github'
-import Google from 'next-auth/providers/google'
 import Credentials from 'next-auth/providers/credentials'
 import { User } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 declare module 'next-auth' {
   interface Session {
     user: {
+      id: string
       role?: 'USER' | 'ADMIN'
     } & DefaultSession['user']
   }
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: {
-    strategy: 'jwt',
-  },
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  session: { strategy: 'jwt' },
+  ...authConfig,
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
   },
   providers: [
-    GitHub({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
-    }),
-    Google({
-      clientId: process.env.GOOGLE_ID!,
-      clientSecret: process.env.GOOGLE_SECRET!,
-    }),
     Credentials({
       name: 'credentials',
       credentials: {
@@ -63,34 +56,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: user.id,
           email: user.email,
           name: user.name,
+          image: user.image,
           role: user.role,
         }
       },
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider === 'github' || account?.provider === 'google') {
-        if (!user.email) return false
-
-        // Check if user exists
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email },
-        })
-
-        if (!existingUser) {
-          // Create new user if doesn't exist
-          await prisma.user.create({
-            data: {
-              email: user.email,
-              name: user.name,
-              image: user.image,
-            },
-          })
-        }
-      }
-      return true
-    },
     async jwt({ token, user }) {
       if (user) {
         token.role = (user as User).role
