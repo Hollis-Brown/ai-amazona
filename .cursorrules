@@ -14,6 +14,8 @@
 
 ## Lessons
 
+1. Use `npx shadcn@latest add [component]` instead of `npx shadcn-ui@latest add [component]` when installing Shadcn UI components.
+
 ## Scratchpad
 
 ### 1. Project Setup and Configuration [ ]
@@ -56,7 +58,7 @@
   - Create `(home)` folder in `app` directory
   - Header with logo, search bar, and navigation
   - Footer with links and social media
-- [ ] Homepage:
+- [x] Homepage:
   - banner carousel
   - latest products
 - [ ] Products Catalog:
