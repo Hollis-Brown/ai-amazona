@@ -30,3 +30,15 @@ Start from this step
   - Order model
   - Review model
   - Cart model
+
+## Prompt 4
+
+- [ ] Implement NextAuth.js authentication:
+  - Email/Password
+  - OAuth providers (Google, GitHub)
+  - JWT handling
+  - Protected routes
+
+## Prompt 5
+
+Implement core features start from home layout.
