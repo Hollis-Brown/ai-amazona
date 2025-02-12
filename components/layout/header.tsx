@@ -20,6 +20,14 @@ export function Header() {
             </Link>
           </div>
 
+          {/* Products Catalog Link */}
+          <Link
+            href='/products'
+            className='ml-6 text-sm font-medium text-gray-700 hover:text-gray-900'
+          >
+            Products
+          </Link>
+
           {/* Search */}
           <div className='hidden sm:block flex-1 max-w-2xl mx-8'>
             <div className='relative'>
