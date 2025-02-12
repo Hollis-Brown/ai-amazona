@@ -15,6 +15,19 @@
 ## Lessons
 
 1. Use `npx shadcn@latest add [component]` instead of `npx shadcn-ui@latest add [component]` when installing Shadcn UI components.
+2. In Next.js 14+, page props params must be typed as a Promise. Example:
+   ```typescript
+   type tParams = Promise<{ id: string }>;
+   interface PageProps {
+     params: tParams
+   }
+   ```
+   Then await the params in the component:
+   ```typescript
+   export default async function Page(props: PageProps) {
+     const { id } = await props.params;
+   }
+   ```
 
 ## Scratchpad
 
@@ -61,16 +74,25 @@
 - [x] Homepage:
   - banner carousel
   - latest products
-- [ ] Products Catalog:
+- [x] Products Catalog:
   - Sidebar with categories and filters
   - Search results
   - Product grid
   - Pagination
-- [ ] Product pages:
-  - Product details
-  - Image gallery
-  - Reviews and ratings
-  - Related products
+- [x] Product pages:
+  - Create product detail page layout
+  - Implement image gallery with thumbnails
+  - Add product information section:
+    - Title, price, description
+    - Stock status
+    - Add to cart button
+  - Reviews and ratings section:
+    - Display existing reviews
+    - Add review form for authenticated users
+    - Star rating component
+  - Related products section:
+    - Show products from same category
+    - Product card carousel
 - [ ] Shopping cart:
   - Add/remove items
   - Update quantities
