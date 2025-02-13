@@ -31,7 +31,7 @@
 
 ## Scratchpad
 
-### 1. Project Setup and Configuration [ ]
+### 1. Project Setup and Configuration [X]
 
 - [x] Initialize Next.js 15 project with TypeScript
 - [x] Set up project structure and folders
@@ -49,7 +49,7 @@
   - NextAuth.js beta for authentication
   - Stripe for payments
 
-### 2. Database and Authentication [ ]
+### 2. Database and Authentication [X]
 
 - [x] Set up PostgreSQL database
 - [x] Configure Prisma schema:
@@ -93,7 +93,7 @@
   - Related products section:
     - Show products from same category
     - Product card carousel
-- [ ] Shopping cart:
+- [x] Shopping cart:
   - Add/remove items
   - Update quantities
   - Cart persistence

@@ -13,6 +13,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { useCart } from '@/store/use-cart'
+import { useToast } from '@/hooks/use-toast'
+import { ToastAction } from '@/components/ui/toast'
 
 interface ProductCardProps {
   product: {
@@ -29,11 +32,34 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className }: ProductCardProps) {
+  const cart = useCart()
+  const { toast } = useToast()
   const averageRating =
     product.reviews && product.reviews.length > 0
       ? product.reviews.reduce((acc, review) => acc + review.rating, 0) /
         product.reviews.length
       : 0
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault() // Prevent navigation when clicking the button
+    cart.addItem({
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0],
+      quantity: 1,
+    })
+
+    toast({
+      title: 'Added to cart',
+      description: `${product.name} added to your cart`,
+      action: (
+        <ToastAction altText='View cart' asChild>
+          <Link href='/cart'>View Cart</Link>
+        </ToastAction>
+      ),
+    })
+  }
 
   return (
     <Card className={cn('overflow-hidden group', className)}>
@@ -76,7 +102,9 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </CardContent>
       </Link>
       <CardFooter className='p-4 pt-0'>
-        <Button className='w-full'>Add to Cart</Button>
+        <Button className='w-full' onClick={handleAddToCart}>
+          Add to Cart
+        </Button>
       </CardFooter>
     </Card>
   )

@@ -10,6 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useCart } from '@/store/use-cart'
+import { useToast } from '@/hooks/use-toast'
+import { ToastAction } from '@/components/ui/toast'
+import Link from 'next/link'
 
 interface ProductInfoProps {
   product: {
@@ -18,6 +22,7 @@ interface ProductInfoProps {
     description: string
     price: number
     stock: number
+    images: string[]
     reviews: {
       rating: number
     }[]
@@ -26,6 +31,8 @@ interface ProductInfoProps {
 
 export function ProductInfo({ product }: ProductInfoProps) {
   const [quantity, setQuantity] = useState('1')
+  const cart = useCart()
+  const { toast } = useToast()
 
   // Calculate average rating
   const averageRating = product.reviews.length
@@ -34,10 +41,22 @@ export function ProductInfo({ product }: ProductInfoProps) {
     : 0
 
   const handleAddToCart = () => {
-    // TODO: Implement add to cart functionality
-    console.log('Adding to cart:', {
+    cart.addItem({
       productId: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0],
       quantity: parseInt(quantity),
+    })
+
+    toast({
+      title: 'Added to cart',
+      description: `${quantity} x ${product.name} added to your cart`,
+      action: (
+        <ToastAction altText='View cart' asChild>
+          <Link href='/cart'>View Cart</Link>
+        </ToastAction>
+      ),
     })
   }
 

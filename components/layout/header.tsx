@@ -1,10 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { Search, ShoppingCart, User } from 'lucide-react'
+import { Search, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useSession, signIn } from 'next-auth/react'
+import { CartBadge } from '@/components/layout/cart-badge'
 
 export function Header() {
   const { data: session } = useSession()
@@ -47,11 +48,7 @@ export function Header() {
                 <Search className='h-5 w-5 sm:hidden' />
               </Link>
             </Button>
-            <Button variant='ghost' size='icon' asChild>
-              <Link href='/cart'>
-                <ShoppingCart className='h-5 w-5' />
-              </Link>
-            </Button>
+            <CartBadge />
             {session ? (
               <Button variant='ghost' size='icon' asChild>
                 <Link href='/dashboard'>
