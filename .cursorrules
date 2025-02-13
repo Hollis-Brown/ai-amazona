@@ -97,7 +97,7 @@
   - Add/remove items
   - Update quantities
   - Cart persistence
-- [ ] Checkout process:
+- [x] Checkout process:
   - Shipping information
   - Payment integration (Stripe)
   - Order confirmation

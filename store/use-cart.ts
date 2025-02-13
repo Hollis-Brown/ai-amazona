@@ -42,7 +42,7 @@ export const useCart = create<CartStore>()(
           return {
             items: [
               ...state.items,
-              { ...item, id: Math.random().toString(36).substr(2, 9) },
+              { ...item, id: `cart_${item.productId}_${Date.now()}` },
             ],
           }
         })

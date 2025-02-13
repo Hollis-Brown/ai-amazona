@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -64,11 +65,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
   return (
     <Card className={cn('overflow-hidden group', className)}>
       <Link href={`/products/${product.id}`}>
-        <div className='aspect-square overflow-hidden'>
-          <img
+        <div className='aspect-square overflow-hidden relative'>
+          <Image
             src={product.images[0]}
             alt={product.name}
-            className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+            fill
+            sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+            className='object-cover transition-transform duration-300 group-hover:scale-105'
           />
         </div>
         <CardHeader className='p-4'>

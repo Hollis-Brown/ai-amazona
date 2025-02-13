@@ -17,11 +17,12 @@ declare module 'next-auth' {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  basePath: '/api/auth',
   session: { strategy: 'jwt' },
   ...authConfig,
   pages: {
-    signIn: '/auth/signin',
-    error: '/auth/error',
+    // signIn: '/auth/signin',
+    // error: '/auth/error',
   },
   providers: [
     Credentials({
@@ -66,12 +67,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.role = (user as User).role
+        token.id = user.id
       }
       return token
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.role = token.role as 'USER' | 'ADMIN'
+        session.user.id = token.id as string
       }
       return session
     },
