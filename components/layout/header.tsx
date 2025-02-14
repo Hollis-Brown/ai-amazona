@@ -1,7 +1,9 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Search, User, LogOut } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Search, User, LogOut, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useSession, signIn, signOut } from 'next-auth/react'
@@ -10,11 +12,36 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
 export function Header() {
   const { data: session } = useSession()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Sync search input with URL search parameter
+  useEffect(() => {
+    const search = searchParams.get('search')
+    if (search) {
+      setSearchQuery(search)
+    }
+  }, [searchParams])
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
+  const clearSearch = () => {
+    setSearchQuery('')
+    router.push('/products')
+  }
 
   return (
     <header className='border-b'>
@@ -37,20 +64,33 @@ export function Header() {
 
           {/* Search */}
           <div className='hidden sm:block flex-1 max-w-2xl mx-8'>
-            <div className='relative'>
+            <form onSubmit={handleSearch} className='relative'>
               <Input
                 type='search'
                 placeholder='Search products...'
-                className='w-full pl-10'
+                className='w-full pl-10 pr-10'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400' />
-            </div>
+              {searchQuery && (
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='icon'
+                  className='absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent'
+                  onClick={clearSearch}
+                >
+                  <X className='h-4 w-4 text-gray-400' />
+                </Button>
+              )}
+            </form>
           </div>
 
           {/* Navigation */}
           <nav className='flex items-center gap-4'>
             <Button variant='ghost' size='icon' asChild>
-              <Link href='/search'>
+              <Link href='/products'>
                 <Search className='h-5 w-5 sm:hidden' />
               </Link>
             </Button>
@@ -58,22 +98,37 @@ export function Header() {
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='ghost' size='icon'>
+                  <Button variant='ghost' className='flex items-center gap-2'>
                     <User className='h-5 w-5' />
+                    <span className='hidden sm:inline-block'>
+                      {session.user.name}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
+                <DropdownMenuContent align='end' className='w-60'>
+                  <DropdownMenuLabel className='font-normal'>
+                    <div className='flex flex-col space-y-1'>
+                      <p className='text-sm font-medium leading-none'>
+                        {session.user.name}
+                      </p>
+                      <p className='text-xs leading-none text-muted-foreground'>
+                        {session.user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href='/dashboard'>Dashboard</Link>
+                    <Link href='/dashboard/orders'>Orders</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href='/orders'>My Orders</Link>
+                    <Link href='/dashboard/profile'>Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href='/profile'>Profile</Link>
+                    <Link href='/dashboard/addresses'>Addresses</Link>
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={() => signOut()}
+                    onClick={() => signOut({ callbackUrl: '/' })}
                     className='text-red-600'
                   >
                     <LogOut className='mr-2 h-4 w-4' />

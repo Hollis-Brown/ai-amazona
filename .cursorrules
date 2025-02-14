@@ -19,7 +19,7 @@
    ```typescript
    type tParams = Promise<{ id: string }>;
    interface PageProps {
-     params: tParams
+     params: tParams;
    }
    ```
    Then await the params in the component:
@@ -28,6 +28,8 @@
      const { id } = await props.params;
    }
    ```
+3. Use `const session = await auth()` instead of `const session = await getServerSession(authOptions)` for Next.js authentication. The new `auth()` function is the recommended way to get the session in Next.js Auth v5.
+4. When importing `useRouter` from 'next/navigation', the component must be marked as a client component using the `'use client'` directive at the top of the file, as this hook only works on the client side.
 
 ## Scratchpad
 
@@ -101,7 +103,7 @@
   - Shipping information
   - Payment integration (Stripe)
   - Order confirmation
-- [ ] User dashboard:
+- [x] User dashboard:
   - Order history
   - Profile management
   - Saved addresses
