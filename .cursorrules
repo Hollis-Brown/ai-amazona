@@ -17,15 +17,15 @@
 1. Use `npx shadcn@latest add [component]` instead of `npx shadcn-ui@latest add [component]` when installing Shadcn UI components.
 2. In Next.js 14+, page props params must be typed as a Promise. Example:
    ```typescript
-   type tParams = Promise<{ id: string }>;
+   type tParams = Promise<{ id: string }>
    interface PageProps {
-     params: tParams;
+     params: tParams
    }
    ```
    Then await the params in the component:
    ```typescript
    export default async function Page(props: PageProps) {
-     const { id } = await props.params;
+     const { id } = await props.params
    }
    ```
 3. Use `const session = await auth()` instead of `const session = await getServerSession(authOptions)` for Next.js authentication. The new `auth()` function is the recommended way to get the session in Next.js Auth v5.
@@ -111,12 +111,56 @@
 
 ### 4. Admin Dashboard [ ]
 
-- [ ] Admin authentication and authorization
+- [x] Admin authentication and authorization
 - [ ] Dashboard overview:
-  - Sales analytics
-  - Recent orders
-  - Low stock alerts
-  - Revenue charts (Recharts)
+  - [x] Layout and Structure:
+    - [x] Create admin dashboard layout with sidebar navigation
+    - [x] Implement responsive grid for dashboard widgets
+    - [x] Add loading states and error boundaries
+  - [x] Key Metrics Cards:
+    - [x] Total revenue widget with real data
+    - [x] Total orders widget with real data
+    - [x] Total customers widget with real data
+    - [x] Average order value widget with real data
+  - [x] Sales Analytics:
+    - [x] Revenue Chart:
+      - [x] Implement line chart using Recharts
+      - [x] Add daily/weekly/monthly/yearly filters
+      - [x] Show revenue trends over time
+      - [x] Add tooltip with detailed information
+    - [x] Order Statistics:
+      - [x] Bar chart for order volume
+      - [x] Order status distribution
+      - [x] Peak ordering times
+  - [x] Recent Orders Table:
+    - [x] Implement data table with columns:
+      - [x] Order ID
+      - [x] Customer name
+      - [x] Order total
+      - [x] Status
+      - [x] Date
+    - [x] Add sorting and filtering
+    - [x] Quick actions (view, process, update status)
+  - [ ] Low Stock Alerts:
+    - Products with stock below threshold
+    - Quick restock actions
+    - Stock level indicators
+  - [ ] Top Products:
+    - Best-selling products list
+    - Revenue by product
+    - Stock status
+  - [ ] Customer Insights:
+    - New vs returning customers
+    - Customer acquisition chart
+    - Top customers by revenue
+  - [ ] Real-time Updates:
+    - Implement WebSocket connection
+    - Live order notifications
+    - Stock level updates
+  - [ ] Export and Reports:
+    - CSV/PDF export functionality
+    - Custom date range selection
+    - Report generation
 - [ ] Product management:
   - CRUD operations
   - Bulk actions

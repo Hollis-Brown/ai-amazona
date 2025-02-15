@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search, User, LogOut, X } from 'lucide-react'
+import { Search, User, LogOut, X, ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useSession, signIn, signOut } from 'next-auth/react'
@@ -49,8 +49,12 @@ export function Header() {
         <div className='flex h-16 items-center justify-between'>
           {/* Logo */}
           <div className='flex-shrink-0'>
-            <Link href='/' className='text-xl font-bold'>
-              AI Amazona
+            <Link
+              href='/'
+              className='flex items-center gap-2 text-xl font-bold'
+            >
+              <ShoppingBag className='h-6 w-6' />
+              <span>AI Amazona</span>
             </Link>
           </div>
 
@@ -126,6 +130,14 @@ export function Header() {
                   <DropdownMenuItem asChild>
                     <Link href='/dashboard/addresses'>Addresses</Link>
                   </DropdownMenuItem>
+                  {session.user.role === 'ADMIN' && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link href='/admin'>Admin Dashboard</Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={() => signOut({ callbackUrl: '/' })}
