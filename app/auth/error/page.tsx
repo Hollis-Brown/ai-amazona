@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export const metadata: Metadata = {
   title: "Authentication Error",
@@ -33,17 +32,15 @@ export default function AuthErrorPage({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Alert variant="destructive">
-            <AlertDescription>
-              {error === "Configuration"
-                ? "There is a problem with the server configuration."
-                : error === "AccessDenied"
-                ? "You do not have permission to sign in."
-                : error === "Verification"
-                ? "The verification token has expired or has already been used."
-                : "An error occurred during authentication."}
-            </AlertDescription>
-          </Alert>
+          <p className="text-sm text-red-500">
+            {error === "Configuration"
+              ? "There is a problem with the server configuration."
+              : error === "AccessDenied"
+              ? "You do not have permission to sign in."
+              : error === "Verification"
+              ? "The verification token has expired or has already been used."
+              : "An error occurred during authentication."}
+          </p>
         </CardContent>
         <CardFooter>
           <Button asChild>

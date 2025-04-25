@@ -13,18 +13,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export const metadata: Metadata = {
   title: "Sign In",
   description: "Sign in to your account",
 }
 
-export default async function SignInPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
+export default async function SignInPage() {
   const session = await auth()
 
   if (session?.user) {

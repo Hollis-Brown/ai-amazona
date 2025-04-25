@@ -1,6 +1,6 @@
 'use client'
 
-import { Heart } from 'lucide-react'
+import { GraduationCap } from 'lucide-react'
 
 export function AboutSection() {
   return (

@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -60,14 +59,14 @@ export default function ContactPage() {
 
       toast({
         title: 'Message sent!',
-        description: 'Thank you for your message. We\'ll get back to you soon.',
+        description: 'Thank you for your message. We&apos;ll get back to you soon.',
       })
       
       form.reset()
-    } catch (error) {
+    } catch (err) {
       toast({
         title: 'Error',
-        description: 'Failed to send message. Please try again.',
+        description: 'Something went wrong. Please try again.',
         variant: 'destructive',
       })
     } finally {
@@ -80,7 +79,7 @@ export default function ContactPage() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-4xl font-bold mb-8">Contact Us</h1>
         <p className="text-gray-600 mb-8">
-          Have a question or want to get in touch? Fill out the form below and we'll get back to you as soon as possible.
+          Have a question or want to get in touch? Fill out the form below and we&apos;ll get back to you as soon as possible.
         </p>
         
         <Form {...form}>

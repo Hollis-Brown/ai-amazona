@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { User, LogOut, Menu } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { useSession, signIn, signOut } from 'next-auth/react'
+import { Button } from '@/components/ui/button'
 import { CartBadge } from '@/components/layout/cart-badge'
 import {
   DropdownMenu,
@@ -20,7 +19,6 @@ import { cn } from '@/lib/utils'
 
 export function Header() {
   const { data: session } = useSession()
-  const router = useRouter()
   const [activePath, setActivePath] = useState('/')
 
   // Set active path based on current route
@@ -79,6 +77,7 @@ export function Header() {
 
           {/* Right Section */}
           <div className='flex items-center gap-4'>
+            <CartBadge />
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
