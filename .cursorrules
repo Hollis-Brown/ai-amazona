@@ -78,19 +78,19 @@
   - [X] Protected routes
 
 ### 3. Core Features - Customer Side [ ]
-- [ ] Home Layout:
+- [X] Home Layout:
+  - Create `(home)` folder in `app` directory
   - Header with logo, search bar, and navigation
   - Footer with links and social media
-- [ ] Homepage:
-  - Featured products
-  - Categories showcase
-  - Special offers
-- [ ] Products Catalog:
+- [X] Homepage:
+  - banner
+  - latest products
+- [X] Products Catalog:
   - Product listing page
   - Category filtering
   - Search functionality
   - Pagination
-- [ ] Product pages:
+- [X] Product pages:
   - Product details
   - Image gallery
   - Reviews and ratings

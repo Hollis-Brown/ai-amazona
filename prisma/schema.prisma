@@ -72,6 +72,9 @@ model Product {
   cartItems   CartItem[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  courseDates String?
+  courseTime  String?
+  courseLength String?
 }
 
 model Category {

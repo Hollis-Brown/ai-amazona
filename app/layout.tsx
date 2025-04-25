@@ -4,6 +4,7 @@ import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import { SessionProvider } from '@/components/providers/session-provider'
 import { CartProvider } from '@/components/providers/cart-provider'
+import { cn } from '@/lib/utils'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,7 +20,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
+      <body
+        className={cn(
+          'min-h-screen font-sans antialiased',
+          inter.className
+        )}
+      >
         <SessionProvider>
           <CartProvider>
             {children}
