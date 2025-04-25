@@ -1,7 +1,5 @@
 'use client'
 
-import { GraduationCap } from 'lucide-react'
-
 export function AboutSection() {
   return (
     <section className="py-16 bg-gradient-to-b from-white to-gray-50">
@@ -11,7 +9,7 @@ export function AboutSection() {
           
           <div className="prose prose-lg max-w-none">
             <p className="text-gray-700 leading-relaxed mb-6">
-              <span className="font-semibold">Kyli Brown</span> is an experienced educator specializing in U.S. History, Political Science, and American foreign policy. With a Master's degree in International Policy Studies focusing on Terrorism Studies and French Studies, she is dedicated to helping British and European professionals gain an in-depth understanding of the United States.
+              <span className="font-semibold">Kyli Brown</span> is an experienced educator specializing in U.S. History, Political Science, and American foreign policy. With a Master&apos;s degree in International Policy Studies focusing on Terrorism Studies and French Studies, she is dedicated to helping British and European professionals gain an in-depth understanding of the United States.
             </p>
             
             <p className="text-gray-700 leading-relaxed mb-6">
