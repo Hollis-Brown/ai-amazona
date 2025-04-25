@@ -15,12 +15,17 @@ export const metadata: Metadata = {
   description: "An error occurred during authentication",
 }
 
-export default function AuthErrorPage({
+type tSearchParams = Promise<{ [key: string]: string | string[] | undefined }>
+
+interface AuthErrorPageProps {
+  searchParams: tSearchParams
+}
+
+export default async function AuthErrorPage({
   searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
-  const error = searchParams.error as string
+}: AuthErrorPageProps) {
+  const params = await searchParams
+  const error = params.error as string
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">

@@ -63,10 +63,10 @@ export default function ContactPage() {
       })
       
       form.reset()
-    } catch (err) {
+    } catch {
       toast({
         title: 'Error',
-        description: 'Something went wrong. Please try again.',
+        description: 'Failed to send message. Please try again.',
         variant: 'destructive',
       })
     } finally {

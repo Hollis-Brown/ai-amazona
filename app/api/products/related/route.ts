@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       },
       take: 6,
       include: {
-        reviews: true,
+        category: true,
       },
     })
 
