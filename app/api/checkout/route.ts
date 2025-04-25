@@ -4,7 +4,16 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import Stripe from 'stripe'
 import { auth } from '@/auth'
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+
+// Check if Stripe API key is available
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.error('STRIPE_SECRET_KEY is not defined in environment variables')
+}
+
+// Initialize Stripe with a fallback for development
+const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY)
+  : null
 
 export async function POST(req: Request) {
   try {
@@ -21,19 +30,7 @@ export async function POST(req: Request) {
       return new NextResponse('Bad request', { status: 400 })
     }
 
-    // Create Stripe payment intent
-    const lineItems = items.map((item: any) => ({
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: item.name,
-          images: [item.image],
-        },
-        unit_amount: Math.round(item.price * 100),
-      },
-      quantity: item.quantity,
-    }))
-
+    // Create order in database
     const order = await prisma.order.create({
       data: {
         userId: session.user.id,
@@ -52,6 +49,25 @@ export async function POST(req: Request) {
         },
       },
     })
+
+    // Check if Stripe is initialized
+    if (!stripe) {
+      console.error('Stripe is not initialized. Please set STRIPE_SECRET_KEY in your environment variables.')
+      return new NextResponse('Payment processing is not configured', { status: 503 })
+    }
+
+    // Create Stripe payment intent
+    const lineItems = items.map((item: any) => ({
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: item.name,
+          images: [item.image],
+        },
+        unit_amount: Math.round(item.price * 100),
+      },
+      quantity: item.quantity,
+    }))
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(
