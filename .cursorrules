@@ -100,7 +100,6 @@
   - Quantity updates
   - Price calculations
 - [ ] Checkout process:
-  - Shipping information
   - Payment integration (Stripe)
   - Order confirmation
 - [ ] User dashboard:

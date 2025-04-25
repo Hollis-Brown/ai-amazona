@@ -22,6 +22,9 @@ interface ProductInfoProps {
     price: number
     stock: number
     images: string[]
+    courseDates?: string
+    courseTime?: string
+    courseLength?: string
   }
 }
 
@@ -61,6 +64,22 @@ export function ProductInfo({ product }: ProductInfoProps) {
       <div className='prose prose-sm'>
         <p>{product.description}</p>
       </div>
+
+      {/* Course Details */}
+      {(product.courseDates || product.courseTime || product.courseLength) && (
+        <div className="space-y-2 p-4 bg-gray-50 rounded-lg border">
+          <h3 className="font-semibold text-lg">Course Details</h3>
+          {product.courseDates && (
+            <p className="text-sm"><span className="font-medium">Course Dates:</span> {product.courseDates}</p>
+          )}
+          {product.courseTime && (
+            <p className="text-sm"><span className="font-medium">Time:</span> {product.courseTime}</p>
+          )}
+          {product.courseLength && (
+            <p className="text-sm"><span className="font-medium">Length:</span> {product.courseLength}</p>
+          )}
+        </div>
+      )}
 
       <div className='space-y-4'>
         <div>
