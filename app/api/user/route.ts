@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import * as z from 'zod'
 
 const profileSchema = z.object({

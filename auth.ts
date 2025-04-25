@@ -20,14 +20,6 @@ declare module 'next-auth' {
 const fallbackSecret = 'fallback-secret-key-for-development-only-min-32-chars'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  basePath: '/api/auth',
-  session: { strategy: 'jwt' },
-  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || fallbackSecret,
-  ...authConfig,
-  pages: {
-    // signIn: '/auth/signin',
-    // error: '/auth/error',
-  },
   providers: [
     Credentials({
       name: 'credentials',
@@ -83,4 +75,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session
     },
   },
+  pages: {
+    signIn: '/auth/signin',
+    error: '/auth/error',
+  },
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || fallbackSecret,
 })

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { PaymentForm } from '@/components/checkout/payment-form'
 import { OrderSummary } from '@/components/checkout/order-summary'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

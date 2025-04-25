@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import Stripe from 'stripe'
 import { auth } from '@/auth'
+import { prisma } from '@/lib/prisma'
+import Stripe from 'stripe'
 
 // Check if Stripe API key is available
 if (!process.env.STRIPE_SECRET_KEY) {
