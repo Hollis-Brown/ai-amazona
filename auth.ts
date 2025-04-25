@@ -16,9 +16,13 @@ declare module 'next-auth' {
   }
 }
 
+// Generate a fallback secret if environment variables are not set
+const fallbackSecret = 'fallback-secret-key-for-development-only-min-32-chars'
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   basePath: '/api/auth',
   session: { strategy: 'jwt' },
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || fallbackSecret,
   ...authConfig,
   pages: {
     // signIn: '/auth/signin',
