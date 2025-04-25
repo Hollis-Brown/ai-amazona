@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search, User, LogOut, X, ShoppingBag } from 'lucide-react'
+import { User, LogOut, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { CartBadge } from '@/components/layout/cart-badge'
 import {
@@ -16,89 +16,69 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
 
 export function Header() {
   const { data: session } = useSession()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const [searchQuery, setSearchQuery] = useState('')
+  const [activePath, setActivePath] = useState('/')
 
-  // Sync search input with URL search parameter
+  // Set active path based on current route
   useEffect(() => {
-    const search = searchParams.get('search')
-    if (search) {
-      setSearchQuery(search)
-    }
-  }, [searchParams])
+    const path = window.location.pathname
+    setActivePath(path)
+  }, [])
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
-    }
-  }
-
-  const clearSearch = () => {
-    setSearchQuery('')
-    router.push('/products')
-  }
+  const navItems = [
+    { href: '/', label: 'Home' },
+    { href: '/about', label: 'About' },
+    { href: '/contact', label: 'Contact' },
+  ]
 
   return (
-    <header className='border-b'>
+    <header className='bg-white shadow-sm'>
       <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='flex h-16 items-center justify-between'>
+        <div className='flex h-20 items-center justify-between'>
           {/* Logo */}
           <div className='flex-shrink-0'>
             <Link
               href='/'
-              className='flex items-center gap-2 text-xl font-bold'
+              className='flex items-center'
             >
-              <ShoppingBag className='h-6 w-6' />
-              <span>AI Amazona</span>
+              <Image 
+                src='/images/logo.png' 
+                alt='AI Amazona Logo' 
+                width={320}
+                height={80}
+                className='w-auto h-24'
+                priority
+              />
             </Link>
           </div>
 
-          {/* Products Catalog Link */}
-          <Link
-            href='/products'
-            className='ml-6 text-sm font-medium text-gray-700 hover:text-gray-900'
-          >
-            Products
-          </Link>
+          {/* Main Navigation */}
+          <nav className='hidden md:flex flex-1 justify-center'>
+            <ul className='flex space-x-8'>
+              {navItems.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      'text-base font-medium transition-colors px-3 py-1 rounded-md',
+                      activePath === item.href
+                        ? 'text-gray-900 outline outline-2 outline-gray-900'
+                        : 'text-gray-700 hover:text-gray-900'
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-          {/* Search */}
-          <div className='hidden sm:block flex-1 max-w-2xl mx-8'>
-            <form onSubmit={handleSearch} className='relative'>
-              <Input
-                type='search'
-                placeholder='Search products...'
-                className='w-full pl-10 pr-10'
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400' />
-              {searchQuery && (
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='icon'
-                  className='absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent'
-                  onClick={clearSearch}
-                >
-                  <X className='h-4 w-4 text-gray-400' />
-                </Button>
-              )}
-            </form>
-          </div>
-
-          {/* Navigation */}
-          <nav className='flex items-center gap-4'>
-            <Button variant='ghost' size='icon' asChild>
-              <Link href='/products'>
-                <Search className='h-5 w-5 sm:hidden' />
-              </Link>
-            </Button>
-            <CartBadge />
+          {/* Right Section */}
+          <div className='flex items-center gap-4'>
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -122,13 +102,7 @@ export function Header() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href='/dashboard/orders'>Orders</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
                     <Link href='/dashboard/profile'>Profile</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href='/dashboard/addresses'>Addresses</Link>
                   </DropdownMenuItem>
                   {session.user.role === 'ADMIN' && (
                     <>
@@ -149,11 +123,20 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant='default' onClick={() => signIn()}>
+              <Button 
+                variant='default' 
+                onClick={() => signIn()}
+                className='bg-blue-600 hover:bg-blue-700 text-white'
+              >
                 Sign In
               </Button>
             )}
-          </nav>
+
+            {/* Mobile menu button */}
+            <Button variant='ghost' size='icon' className='md:hidden'>
+              <Menu className='h-6 w-6' />
+            </Button>
+          </div>
         </div>
       </div>
     </header>

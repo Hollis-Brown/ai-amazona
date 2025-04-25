@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -23,9 +22,6 @@ interface ProductInfoProps {
     price: number
     stock: number
     images: string[]
-    reviews: {
-      rating: number
-    }[]
   }
 }
 
@@ -33,12 +29,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const [quantity, setQuantity] = useState('1')
   const cart = useCart()
   const { toast } = useToast()
-
-  // Calculate average rating
-  const averageRating = product.reviews.length
-    ? product.reviews.reduce((acc, review) => acc + review.rating, 0) /
-      product.reviews.length
-    : 0
 
   const handleAddToCart = () => {
     cart.addItem({
@@ -64,23 +54,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
     <div className='space-y-6'>
       <div>
         <h1 className='text-3xl font-bold'>{product.name}</h1>
-        <div className='flex items-center gap-2 mt-2'>
-          <div className='flex'>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star
-                key={star}
-                className={`w-4 h-4 ${
-                  star <= averageRating
-                    ? 'fill-primary text-primary'
-                    : 'fill-muted text-muted'
-                }`}
-              />
-            ))}
-          </div>
-          <span className='text-muted-foreground'>
-            ({product.reviews.length} reviews)
-          </span>
-        </div>
       </div>
 
       <div className='text-2xl font-bold'>${product.price.toFixed(2)}</div>

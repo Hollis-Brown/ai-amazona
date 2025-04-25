@@ -3,7 +3,6 @@
 import * as React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,21 +24,17 @@ interface ProductCardProps {
     description: string
     price: number
     images: string[]
-    reviews?: {
-      rating: number
-    }[]
+    courseDates?: string
+    courseTime?: string
+    courseLength?: string
   }
   className?: string
+  showFullDescription?: boolean
 }
 
-export function ProductCard({ product, className }: ProductCardProps) {
+export function ProductCard({ product, className, showFullDescription = false }: ProductCardProps) {
   const cart = useCart()
   const { toast } = useToast()
-  const averageRating =
-    product.reviews && product.reviews.length > 0
-      ? product.reviews.reduce((acc, review) => acc + review.rating, 0) /
-        product.reviews.length
-      : 0
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault() // Prevent navigation when clicking the button
@@ -63,8 +58,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
   }
 
   return (
-    <Card className={cn('overflow-hidden group', className)}>
-      <Link href={`/products/${product.id}`}>
+    <Card className={cn('overflow-hidden group flex flex-col h-full', className)}>
+      <Link href={`/products/${product.id}`} className="flex-1">
         <div className='aspect-square overflow-hidden relative'>
           <Image
             src={product.images[0]}
@@ -75,40 +70,37 @@ export function ProductCard({ product, className }: ProductCardProps) {
           />
         </div>
         <CardHeader className='p-4'>
-          <CardTitle className='line-clamp-1'>{product.name}</CardTitle>
-          <CardDescription className='line-clamp-2'>
+          <CardTitle className='text-lg'>{product.name}</CardTitle>
+          <CardDescription className={showFullDescription ? '' : 'line-clamp-2'}>
             {product.description}
           </CardDescription>
-        </CardHeader>
-        <CardContent className='p-4 pt-0'>
-          <div className='flex items-center gap-2'>
-            <div className='flex items-center'>
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={cn(
-                    'w-4 h-4',
-                    i < Math.round(averageRating)
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'fill-gray-200 text-gray-200'
-                  )}
-                />
-              ))}
+          {(product.courseDates || product.courseTime || product.courseLength) && (
+            <div className="mt-4 space-y-1 text-sm text-muted-foreground border-t pt-4">
+              {product.courseDates && (
+                <p><span className="font-medium">Course Dates:</span> {product.courseDates}</p>
+              )}
+              {product.courseTime && (
+                <p><span className="font-medium">Time:</span> {product.courseTime}</p>
+              )}
+              {product.courseLength && (
+                <p><span className="font-medium">Length:</span> {product.courseLength}</p>
+              )}
             </div>
-            <span className='text-sm text-gray-600'>
-              ({product.reviews?.length || 0})
-            </span>
-          </div>
-          <div className='mt-2 text-xl font-bold'>
+          )}
+        </CardHeader>
+      </Link>
+      <div className="mt-auto">
+        <CardContent className='p-4 pt-0'>
+          <div className='text-xl font-bold'>
             ${product.price.toFixed(2)}
           </div>
         </CardContent>
-      </Link>
-      <CardFooter className='p-4 pt-0'>
-        <Button className='w-full' onClick={handleAddToCart}>
-          Add to Cart
-        </Button>
-      </CardFooter>
+        <CardFooter className='p-4 pt-0'>
+          <Button className='w-full' onClick={handleAddToCart}>
+            Add to Cart
+          </Button>
+        </CardFooter>
+      </div>
     </Card>
   )
 }
