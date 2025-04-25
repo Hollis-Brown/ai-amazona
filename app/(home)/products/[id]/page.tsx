@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { ProductGallery } from '@/components/products/product-gallery'
 import { ProductInfo } from '@/components/products/product-info'
 import { ProductReviews } from '@/components/products/product-reviews'

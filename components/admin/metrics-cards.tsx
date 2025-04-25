@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatCurrency } from '@/lib/utils'
 import { auth } from '@/auth'
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { OrderStatus, Role } from '@prisma/client'
+import { format } from 'date-fns'
 
 async function getMetrics() {
   try {

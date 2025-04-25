@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { OrderStatus } from '@prisma/client'
 import { startOfDay, subDays, format } from 'date-fns'
 

@@ -33,7 +33,7 @@
 
 ## Scratchpad
 
-### 1. Project Setup and Configuration [ ]
+### 1. Project Setup and Configuration [X]
 - [X] Initialize Next.js 15 project with TypeScript
 - [X] Set up project structure and folders
 - [X] Configure ESLint and Prettier
@@ -61,7 +61,7 @@
   - [X] Payment Processing:
     - [X] Install Stripe: `npm install stripe @stripe/stripe-js`
 
-### 2. Database and Authentication [ ]
+### 2. Database and Authentication [X]
 - [X] Set up PostgreSQL database
 - [X] Configure Prisma schema:
   - [X] User model
@@ -71,11 +71,11 @@
   - [X] Review model
   - [X] Cart model
 - [X] Sync database with schema
-- [ ] Implement NextAuth.js authentication:
-  - Email/Password
-  - OAuth providers (Google, GitHub)
-  - JWT handling
-  - Protected routes
+- [X] Implement NextAuth.js authentication:
+  - [X] Email/Password
+  - [X] OAuth providers (Google, GitHub)
+  - [X] JWT handling
+  - [X] Protected routes
 
 ### 3. Core Features - Customer Side [ ]
 - [ ] Home Layout:
