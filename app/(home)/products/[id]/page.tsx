@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { ProductGallery } from '@/components/products/product-gallery'
 import { ProductInfo } from '@/components/products/product-info'
-import { ProductReviews } from '@/components/products/product-reviews'
 import { ProductRelated } from '@/components/products/product-related'
 
 type tParams = Promise<{ id: string }>
@@ -16,11 +15,6 @@ async function getProduct(id: string) {
     where: { id },
     include: {
       category: true,
-      reviews: {
-        include: {
-          user: true,
-        },
-      },
     },
   })
 
@@ -43,11 +37,6 @@ export default async function ProductPage(props: ProductPageProps) {
 
         {/* Product Information */}
         <ProductInfo product={product} />
-      </div>
-
-      {/* Reviews Section */}
-      <div className='mb-16'>
-        <ProductReviews productId={product.id} reviews={product.reviews} />
       </div>
 
       {/* Related Products */}

@@ -16,7 +16,7 @@ async function getLatestProducts() {
       }
     },
     include: {
-      reviews: true,
+      category: true,
     },
   })
 }

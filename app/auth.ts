@@ -5,7 +5,6 @@ import Google from "next-auth/providers/google"
 import Github from "next-auth/providers/github"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
-import { User } from "@prisma/client"
 
 export const {
   handlers: { GET, POST },
