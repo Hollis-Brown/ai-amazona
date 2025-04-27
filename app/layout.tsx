@@ -9,8 +9,12 @@ import { cn } from '@/lib/utils'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AI Amazona',
+  title: 'History Beyond Headlines',
   description: 'Your one-stop shop for AI courses',
+  icons: {
+    icon: '/images/logo.png',
+    apple: '/images/logo.png',
+  }
 }
 
 export default function RootLayout({
