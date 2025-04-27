@@ -1,58 +1,27 @@
-import { Metadata } from "next"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import Link from "next/link"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 
-export const metadata: Metadata = {
-  title: "Authentication Error",
-  description: "An error occurred during authentication",
-}
-
-type tSearchParams = Promise<{ [key: string]: string | string[] | undefined }>
-
-interface AuthErrorPageProps {
-  searchParams: tSearchParams
-}
-
-export default async function AuthErrorPage({
+export default async function AuthError({
   searchParams,
-}: AuthErrorPageProps) {
-  const params = await searchParams
-  const error = params.error as string
+}: {
+  searchParams: Promise<{ error?: string }>
+}) {
+  const { error } = await searchParams
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Authentication Error</CardTitle>
-          <CardDescription>
-            An error occurred during authentication
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-red-500">
-            {error === "Configuration"
-              ? "There is a problem with the server configuration."
-              : error === "AccessDenied"
-              ? "You do not have permission to sign in."
-              : error === "Verification"
-              ? "The verification token has expired or has already been used."
-              : "An error occurred during authentication."}
-          </p>
-        </CardContent>
-        <CardFooter>
-          <Button asChild>
-            <Link href="/auth/signin">Try Again</Link>
-          </Button>
-        </CardFooter>
-      </Card>
+    <div className="flex min-h-[400px] flex-col items-center justify-center gap-8 px-4">
+      <Alert variant="destructive" className="max-w-md">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Authentication Error</AlertTitle>
+        <AlertDescription>
+          {error || "An error occurred during authentication"}
+        </AlertDescription>
+      </Alert>
+      <Button asChild>
+        <Link href="/auth/signin">Try Again</Link>
+      </Button>
     </div>
   )
 } 

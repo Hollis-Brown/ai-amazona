@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useCart } from '@/store/use-cart'
+import { useCartStore } from '@/lib/store/cart'
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isHydrated, setIsHydrated] = useState(false)
@@ -13,7 +13,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       try {
         const { state } = JSON.parse(savedCart)
         if (state && state.items) {
-          useCart.setState({ items: state.items })
+          useCartStore.setState({ items: state.items })
         }
       } catch (error) {
         console.error('Error hydrating cart:', error)

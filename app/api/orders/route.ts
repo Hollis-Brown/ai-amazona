@@ -9,17 +9,16 @@ interface CartItem {
   price: number
 }
 
-interface ShippingInfo {
-  address: string
-  city: string
-  state: string
-  zipCode: string
-  country: string
+interface UserInfo {
+  fullName: string
+  email: string
 }
 
 interface OrderBody {
   items: CartItem[]
-  shippingInfo: ShippingInfo
+  userInfo: UserInfo
+  subtotal: number
+  tax: number
   total: number
 }
 
@@ -34,7 +33,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
-    const { items, shippingInfo, total } = body as OrderBody
+    const { items, userInfo, total } = body as OrderBody
 
     if (!items?.length) {
       return new NextResponse('Bad Request: Cart items are required', {
@@ -42,8 +41,8 @@ export async function POST(req: Request) {
       })
     }
 
-    if (!shippingInfo) {
-      return new NextResponse('Bad Request: Shipping information is required', {
+    if (!userInfo) {
+      return new NextResponse('Bad Request: User information is required', {
         status: 400,
       })
     }
@@ -87,24 +86,24 @@ export async function POST(req: Request) {
       )
     }
 
-    // Create shipping address
-    const address = await prisma.address.create({
-      data: {
-        street: shippingInfo.address,
-        city: shippingInfo.city,
-        state: shippingInfo.state,
-        postalCode: shippingInfo.zipCode,
-        country: shippingInfo.country,
-        user: {
-          connect: {
-            id: session.user.id,
-          },
-        },
-      },
-    })
-
     // Start a transaction to ensure all operations succeed or fail together
     const order = await prisma.$transaction(async (tx) => {
+      // Create a temporary address for the order (required by schema)
+      const address = await tx.address.create({
+        data: {
+          street: "Digital Delivery",
+          city: "Online",
+          state: "Digital",
+          postalCode: "00000",
+          country: "Digital",
+          user: {
+            connect: {
+              id: session.user.id,
+            },
+          },
+        },
+      })
+
       // Create order with items
       const newOrder = await tx.order.create({
         data: {

@@ -1,22 +1,18 @@
 'use client'
 
-import { useCart } from '@/store/use-cart'
+import { useCartStore } from '@/lib/store/cart'
 import { formatPrice } from '@/lib/utils'
 import Image from 'next/image'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 
 export function OrderSummary() {
-  const cart = useCart()
-  const items = cart.items
+  const items = useCartStore((state) => state.items)
+  const getTotalPrice = useCartStore((state) => state.getTotalPrice)
 
-  const subtotal = items.reduce((total, item) => {
-    return total + item.price * item.quantity
-  }, 0)
-
-  const shipping = 10 // Fixed shipping cost
+  const subtotal = getTotalPrice()
   const tax = subtotal * 0.1 // 10% tax
-  const total = subtotal + shipping + tax
+  const total = subtotal + tax
 
   return (
     <div className='space-y-6'>
@@ -50,11 +46,7 @@ export function OrderSummary() {
           <span>{formatPrice(subtotal)}</span>
         </div>
         <div className='flex justify-between text-sm'>
-          <span>Shipping</span>
-          <span>{formatPrice(shipping)}</span>
-        </div>
-        <div className='flex justify-between text-sm'>
-          <span>Tax</span>
+          <span>Tax (10%)</span>
           <span>{formatPrice(tax)}</span>
         </div>
         <Separator />

@@ -13,17 +13,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Sign In",
   description: "Sign in to your account",
 }
 
-export default async function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string; error?: string }>
+}) {
+  const params = await searchParams
   const session = await auth()
+  const callbackUrl = params.callbackUrl || "/"
 
   if (session?.user) {
-    redirect("/")
+    redirect(callbackUrl)
   }
 
   return (
@@ -36,9 +44,19 @@ export default async function SignInPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
+          {params.error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {params.error === "CredentialsSignin" 
+                  ? "Invalid email or password" 
+                  : "An error occurred during sign in"}
+              </AlertDescription>
+            </Alert>
+          )}
           <div className="grid grid-cols-2 gap-6">
             <Button variant="outline" asChild>
-              <Link href="/api/auth/signin/google">
+              <Link href={`/api/auth/signin/google?callbackUrl=${encodeURIComponent(callbackUrl)}`}>
                 <svg
                   className="mr-2 h-4 w-4"
                   aria-hidden="true"
@@ -58,7 +76,7 @@ export default async function SignInPage() {
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/api/auth/signin/github">
+              <Link href={`/api/auth/signin/github?callbackUrl=${encodeURIComponent(callbackUrl)}`}>
                 <svg
                   className="mr-2 h-4 w-4"
                   aria-hidden="true"
@@ -92,7 +110,18 @@ export default async function SignInPage() {
             "use server"
             const email = formData.get("email") as string
             const password = formData.get("password") as string
-            await signIn("credentials", { email, password, redirectTo: "/" })
+            
+            try {
+              await signIn("credentials", { 
+                email, 
+                password, 
+                redirectTo: callbackUrl,
+                redirect: true
+              })
+            } catch (error) {
+              console.error("Sign in error:", error)
+              // The error will be handled by the error page
+            }
           }}>
             <div className="grid gap-2">
               <div className="grid gap-1">
@@ -118,7 +147,7 @@ export default async function SignInPage() {
                   required
                 />
               </div>
-              <Button>Sign In</Button>
+              <Button type="submit">Sign In</Button>
             </div>
           </form>
         </CardContent>

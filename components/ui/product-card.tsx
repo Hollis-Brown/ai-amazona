@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { useCart } from '@/store/use-cart'
+import { useCartStore } from '@/lib/store/cart'
 import { useToast } from '@/hooks/use-toast'
 import { ToastAction } from '@/components/ui/toast'
 
@@ -33,13 +33,13 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className, showFullDescription = false }: ProductCardProps) {
-  const cart = useCart()
+  const addItem = useCartStore((state) => state.addItem)
   const { toast } = useToast()
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault() // Prevent navigation when clicking the button
-    cart.addItem({
-      productId: product.id,
+    addItem({
+      id: product.id,
       name: product.name,
       price: product.price,
       image: product.images[0],

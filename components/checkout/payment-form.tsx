@@ -10,6 +10,8 @@ import {
 import { loadStripe } from '@stripe/stripe-js'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -69,9 +71,17 @@ function PaymentFormContent({ orderId }: PaymentFormProps) {
 
 export function PaymentForm({ orderId }: PaymentFormProps) {
   const [clientSecret, setClientSecret] = useState<string>('')
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+  const { data: session } = useSession()
 
   useEffect(() => {
     // Get the client secret when the component mounts
+    if (!session) {
+      router.push('/api/auth/signin?callbackUrl=/checkout')
+      return
+    }
+
     fetch('/api/payment', {
       method: 'POST',
       headers: {
@@ -81,13 +91,33 @@ export function PaymentForm({ orderId }: PaymentFormProps) {
         orderId,
       }),
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          const errorData = await res.text()
+          throw new Error(errorData || 'Failed to get payment information')
+        }
+        return res.json()
+      })
       .then((data) => setClientSecret(data.clientSecret))
-      .catch((error) => console.error('Failed to get client secret:', error))
-  }, [orderId])
+      .catch((error) => {
+        console.error('Failed to get client secret:', error)
+        setError(error.message)
+      })
+  }, [orderId, router, session])
+
+  if (error) {
+    return (
+      <div className="text-center p-4">
+        <p className="text-red-500 mb-4">{error}</p>
+        <Button onClick={() => router.push('/api/auth/signin?callbackUrl=/checkout')}>
+          Sign In to Continue
+        </Button>
+      </div>
+    )
+  }
 
   if (!clientSecret) {
-    return null
+    return <div className="text-center p-4">Loading payment information...</div>
   }
 
   const options = {
