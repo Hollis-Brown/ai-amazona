@@ -11,7 +11,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
@@ -81,81 +80,58 @@ export function Header() {
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='ghost' className='flex items-center gap-2'>
-                    <User className='h-5 w-5' />
-                    <span className='hidden sm:inline-block'>
-                      {session.user.name}
-                    </span>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-9 w-9 p-0"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <User className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align='end' className='w-60'>
-                  <DropdownMenuLabel className='font-normal'>
-                    <div className='flex flex-col space-y-1'>
-                      <p className='text-sm font-medium leading-none'>
-                        {session.user.name}
-                      </p>
-                      <p className='text-xs leading-none text-muted-foreground'>
-                        {session.user.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem asChild>
-                    <Link href='/dashboard' className='flex items-center'>
-                      <LayoutDashboard className='mr-2 h-4 w-4' />
+                    <Link href="/dashboard" className="flex items-center">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href='/dashboard/orders' className='flex items-center'>
-                      <ShoppingBag className='mr-2 h-4 w-4' />
+                    <Link href="/dashboard/orders" className="flex items-center">
+                      <ShoppingBag className="mr-2 h-4 w-4" />
                       My Orders
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href='/dashboard/profile' className='flex items-center'>
-                      <UserCircle className='mr-2 h-4 w-4' />
+                    <Link href="/dashboard/profile" className="flex items-center">
+                      <UserCircle className="mr-2 h-4 w-4" />
                       Profile
                     </Link>
                   </DropdownMenuItem>
-                  {session.user.role === 'ADMIN' && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link href='/admin'>Admin Dashboard</Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={() => signOut({ callbackUrl: '/' })}
-                    className='text-red-600'
+                    className="text-red-600 focus:bg-red-50 focus:text-red-600 cursor-pointer"
                   >
-                    <LogOut className='mr-2 h-4 w-4' />
-                    Sign out
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant='ghost' size='icon'>
-                    <User className='h-5 w-5' />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end' className='w-60'>
-                  <DropdownMenuLabel>Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => signIn()}>
-                    Sign In
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-9 w-9 p-0"
+                onClick={() => signIn()}
+              >
+                <User className="h-5 w-5" />
+              </Button>
             )}
 
             {/* Mobile menu button */}
-            <Button variant='ghost' size='icon' className='md:hidden'>
-              <Menu className='h-6 w-6' />
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="h-6 w-6" />
             </Button>
           </div>
         </div>
