@@ -1,21 +1,13 @@
 'use client'
 
-import * as React from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { useCartStore } from '@/lib/store/cart'
-import { useToast } from '@/hooks/use-toast'
-import { ToastAction } from '@/components/ui/toast'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader, CardDescription } from '@/components/ui/card'
+import { AddToCartDialog } from '@/components/ui/add-to-cart-dialog'
+import { ShoppingCart } from 'lucide-react'
 
 interface ProductCardProps {
   product: {
@@ -28,13 +20,12 @@ interface ProductCardProps {
     courseTime?: string
     courseLength?: string
   }
-  className?: string
   showFullDescription?: boolean
 }
 
-export function ProductCard({ product, className, showFullDescription = false }: ProductCardProps) {
+export function ProductCard({ product, showFullDescription = false }: ProductCardProps) {
+  const [dialogOpen, setDialogOpen] = useState(false)
   const addItem = useCartStore((state) => state.addItem)
-  const { toast } = useToast()
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault() // Prevent navigation when clicking the button
@@ -45,62 +36,64 @@ export function ProductCard({ product, className, showFullDescription = false }:
       image: product.images[0],
       quantity: 1,
     })
-
-    toast({
-      title: 'Added to cart',
-      description: `${product.name} added to your cart`,
-      action: (
-        <ToastAction altText='View cart' asChild>
-          <Link href='/cart'>View Cart</Link>
-        </ToastAction>
-      ),
-    })
+    setDialogOpen(true)
   }
 
   return (
-    <Card className={cn('overflow-hidden group flex flex-col h-full', className)}>
-      <Link href={`/products/${product.id}`} className="flex-1">
-        <div className='aspect-square overflow-hidden relative'>
-          <Image
-            src={product.images[0]}
-            alt={product.name}
-            fill
-            sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-            className='object-cover transition-transform duration-300 group-hover:scale-105'
-          />
-        </div>
-        <CardHeader className='p-4'>
-          <CardTitle className='text-lg'>{product.name}</CardTitle>
-          <CardDescription className={showFullDescription ? '' : 'line-clamp-2'}>
-            {product.description}
-          </CardDescription>
-          {(product.courseDates || product.courseTime || product.courseLength) && (
-            <div className="mt-4 space-y-1 text-sm text-muted-foreground border-t pt-4">
-              {product.courseDates && (
-                <p><span className="font-medium">Course Dates:</span> {product.courseDates}</p>
-              )}
-              {product.courseTime && (
-                <p><span className="font-medium">Time:</span> {product.courseTime}</p>
-              )}
-              {product.courseLength && (
-                <p><span className="font-medium">Length:</span> {product.courseLength}</p>
-              )}
-            </div>
-          )}
-        </CardHeader>
-      </Link>
-      <div className="mt-auto">
-        <CardContent className='p-4 pt-0'>
-          <div className='text-xl font-bold'>
-            ${product.price.toFixed(2)}
+    <>
+      <Card className="group overflow-hidden rounded-lg h-full flex flex-col">
+        <Link href={`/products/${product.id}`} className="flex-1 flex flex-col">
+          <div className="relative aspect-square">
+            <Image
+              src={product.images[0]}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform group-hover:scale-105"
+            />
           </div>
-        </CardContent>
-        <CardFooter className='p-4 pt-0'>
-          <Button className='w-full' onClick={handleAddToCart}>
-            Add to Cart
-          </Button>
-        </CardFooter>
-      </div>
-    </Card>
+          <CardHeader className="p-4 flex-1">
+            <h3 className="font-semibold">{product.name}</h3>
+            <CardDescription className={showFullDescription ? '' : 'line-clamp-2'}>
+              {product.description}
+            </CardDescription>
+            {(product.courseDates || product.courseTime || product.courseLength) && (
+              <div className="mt-4 space-y-1 text-sm text-muted-foreground border-t pt-4">
+                {product.courseDates && (
+                  <p><span className="font-medium">Course Dates:</span> {product.courseDates}</p>
+                )}
+                {product.courseTime && (
+                  <p><span className="font-medium">Time:</span> {product.courseTime}</p>
+                )}
+                {product.courseLength && (
+                  <p><span className="font-medium">Length:</span> {product.courseLength}</p>
+                )}
+              </div>
+            )}
+          </CardHeader>
+          <div className="mt-auto">
+            <CardContent className="p-4 pt-0">
+              <p className="text-lg font-semibold">
+                ${product.price.toFixed(2)}
+              </p>
+            </CardContent>
+            <CardFooter className="p-4 pt-0">
+              <Button 
+                className="w-full gap-2" 
+                onClick={handleAddToCart}
+              >
+                Add to Cart
+                <ShoppingCart className="h-4 w-4" />
+              </Button>
+            </CardFooter>
+          </div>
+        </Link>
+      </Card>
+
+      <AddToCartDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        productName={product.name}
+      />
+    </>
   )
 }

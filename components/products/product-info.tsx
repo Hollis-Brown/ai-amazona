@@ -1,7 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useCartStore } from '@/lib/store/cart'
 import { Button } from '@/components/ui/button'
+import { AddToCartDialog } from '@/components/ui/add-to-cart-dialog'
+import { Product } from '@prisma/client'
+import { ShoppingCart } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -9,92 +13,58 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useCartStore } from '@/lib/store/cart'
-import { useToast } from '@/hooks/use-toast'
-import { ToastAction } from '@/components/ui/toast'
-import Link from 'next/link'
 
 interface ProductInfoProps {
-  product: {
-    id: string
-    name: string
-    description: string
-    price: number
-    stock: number
-    images: string[]
-    courseDates?: string
-    courseTime?: string
-    courseLength?: string
+  product: Product & {
+    category: {
+      id: string
+      name: string
+    }
   }
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
+  const [dialogOpen, setDialogOpen] = useState(false)
   const [quantity, setQuantity] = useState('1')
   const addItem = useCartStore((state) => state.addItem)
-  const { toast } = useToast()
 
   const handleAddToCart = () => {
-    // Create a cart item with the correct structure
-    const cartItem = {
+    addItem({
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.images[0],
       quantity: parseInt(quantity),
-    }
-    
-    // Add to cart
-    addItem(cartItem)
-    
-    // Show toast notification
-    toast({
-      title: 'Added to cart',
-      description: `${quantity} x ${product.name} added to your cart`,
-      action: (
-        <ToastAction altText='View cart' asChild>
-          <Link href='/cart'>View Cart</Link>
-        </ToastAction>
-      ),
     })
+    setDialogOpen(true)
   }
 
   return (
-    <div className='space-y-6'>
-      <div>
-        <h1 className='text-3xl font-bold'>{product.name}</h1>
+    <div className="flex flex-col gap-8">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold">{product.name}</h1>
+        <p className="text-2xl font-semibold">${product.price.toFixed(2)}</p>
       </div>
 
-      <div className='text-2xl font-bold'>${product.price.toFixed(2)}</div>
-
-      <div className='prose prose-sm'>
-        <p>{product.description}</p>
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Description</h2>
+        <p className="text-muted-foreground">{product.description}</p>
       </div>
 
-      {/* Course Details */}
-      {(product.courseDates || product.courseTime || product.courseLength) && (
-        <div className="space-y-2 p-4 bg-gray-50 rounded-lg border">
-          <h3 className="font-semibold text-lg">Course Details</h3>
-          {product.courseDates && (
-            <p className="text-sm"><span className="font-medium">Course Dates:</span> {product.courseDates}</p>
-          )}
-          {product.courseTime && (
-            <p className="text-sm"><span className="font-medium">Time:</span> {product.courseTime}</p>
-          )}
-          {product.courseLength && (
-            <p className="text-sm"><span className="font-medium">Length:</span> {product.courseLength}</p>
-          )}
-        </div>
-      )}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Category</h2>
+        <p className="text-muted-foreground">{product.category.name}</p>
+      </div>
 
-      <div className='space-y-4'>
+      <div className="space-y-4">
         <div>
-          <div className='text-sm font-medium mb-2'>Quantity</div>
+          <div className="text-sm font-medium mb-2">Quantity</div>
           <Select value={quantity} onValueChange={setQuantity}>
-            <SelectTrigger className='w-24'>
-              <SelectValue placeholder='Select quantity' />
+            <SelectTrigger className="w-24">
+              <SelectValue placeholder="Select quantity" />
             </SelectTrigger>
             <SelectContent>
-              {Array.from({ length: Math.min(10, product.stock) }, (_, i) => (
+              {Array.from({ length: Math.min(10, product.stock || 10) }, (_, i) => (
                 <SelectItem key={i + 1} value={(i + 1).toString()}>
                   {i + 1}
                 </SelectItem>
@@ -103,22 +73,34 @@ export function ProductInfo({ product }: ProductInfoProps) {
           </Select>
         </div>
 
-        <div className='text-sm text-muted-foreground'>
-          {product.stock > 0 ? (
-            <span className='text-green-600'>In stock</span>
+        <div className="text-sm text-muted-foreground">
+          {product.stock ? (
+            product.stock > 0 ? (
+              <span className="text-green-600">In stock</span>
+            ) : (
+              <span className="text-red-600">Out of stock</span>
+            )
           ) : (
-            <span className='text-red-600'>Out of stock</span>
+            <span className="text-green-600">In stock</span>
           )}
         </div>
-
-        <Button
-          onClick={handleAddToCart}
-          className='w-full'
-          disabled={product.stock === 0}
-        >
-          Add to Cart
-        </Button>
       </div>
+
+      <Button 
+        size="lg" 
+        onClick={handleAddToCart}
+        className="w-full gap-2"
+        disabled={product.stock === 0}
+      >
+        Add to Cart
+        <ShoppingCart className="h-5 w-5" />
+      </Button>
+
+      <AddToCartDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        productName={product.name}
+      />
     </div>
   )
 }

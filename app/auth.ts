@@ -1,10 +1,23 @@
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import Google from "next-auth/providers/google";
 import Github from "next-auth/providers/github";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string
+      role?: 'USER' | 'ADMIN'
+    } & DefaultSession['user']
+  }
+  
+  interface User {
+    role?: 'USER' | 'ADMIN'
+  }
+}
 
 export const {
   handlers: { GET, POST },
@@ -65,16 +78,21 @@ export const {
   ],
   callbacks: {
     async session({ token, session }) {
-      if (token) {
+      if (token && session.user) {
         session.user.id = token.id as string;
         session.user.name = token.name as string;
         session.user.email = token.email as string;
         session.user.image = token.picture as string;
+        session.user.role = token.role as 'USER' | 'ADMIN' | undefined;
       }
-
       return session;
     },
     async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      
       const dbUser = await prisma.user.findFirst({
         where: {
           email: token.email as string,
@@ -82,9 +100,6 @@ export const {
       });
 
       if (!dbUser) {
-        if (user) {
-          token.id = user?.id;
-        }
         return token;
       }
 
@@ -93,6 +108,7 @@ export const {
         name: dbUser.name,
         email: dbUser.email,
         picture: dbUser.image,
+        role: dbUser.role,
       };
     },
   },
