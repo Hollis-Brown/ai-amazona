@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useCart } from '@/store/use-cart'
+import { useCartStore } from '@/lib/store/cart'
 import { useToast } from '@/hooks/use-toast'
 
 const shippingFormSchema = z.object({
@@ -33,7 +33,6 @@ type ShippingFormValues = z.infer<typeof shippingFormSchema>
 export function ShippingForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const cart = useCart()
   const { toast } = useToast()
 
   const form = useForm<ShippingFormValues>({
@@ -49,17 +48,15 @@ export function ShippingForm() {
     },
   })
 
+  const { items, getTotalPrice, clearCart } = useCartStore()
+
+  const subtotal = getTotalPrice()
+  const tax = subtotal * 0.1 // 10% tax
+  const total = subtotal + tax
+
   async function onSubmit(data: ShippingFormValues) {
     try {
       setLoading(true)
-
-      const subtotal = cart.items.reduce((total, item) => {
-        return total + item.price * item.quantity
-      }, 0)
-
-      const shipping = 10 // Fixed shipping cost
-      const tax = subtotal * 0.1 // 10% tax
-      const total = subtotal + shipping + tax
 
       const response = await fetch('/api/orders', {
         method: 'POST',
@@ -67,11 +64,11 @@ export function ShippingForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          items: cart.items,
+          items: items,
           shippingInfo: data,
           subtotal,
           tax,
-          shipping,
+          shipping: 10, // Fixed shipping cost
           total,
         }),
       })
@@ -83,7 +80,7 @@ export function ShippingForm() {
       const { orderId } = await response.json()
 
       // Clear cart after successful order creation
-      cart.clearCart()
+      clearCart()
 
       // Redirect to payment page
       router.push(`/payment/${orderId}`)

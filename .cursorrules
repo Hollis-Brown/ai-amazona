@@ -96,17 +96,51 @@
   - Reviews and ratings
   - Add to cart functionality
 - [ ] Shopping cart:
-  - Cart management
-  - Quantity updates
-  - Price calculations
+  - [ ] Cart State Management:
+    - Set up Zustand store for cart
+    - Implement add/remove/update quantity actions
+    - Persist cart data in localStorage
+  - [ ] Cart Components:
+    - Create CartItem component
+    - Create CartSummary component
+    - Implement quantity controls
+    - Add remove item functionality
+  - [ ] Cart Page Layout:
+    - Create responsive grid layout
+    - Show product images and details
+    - Display subtotal, tax, and total
+    - Add checkout button
+  - [ ] Cart API:
+    - Create cart API endpoints
+    - Implement price calculations
+    - Handle stock validation
+    - Sync with user's saved cart (if logged in)
 - [ ] Checkout process:
-  - Payment integration (Stripe)
-  - Order confirmation
+  - [ ] Checkout Flow:
+    - Address collection/selection
+    - Payment method integration (Stripe)
+    - Order summary review
+  - [ ] Payment Integration:
+    - Set up Stripe Elements
+    - Implement payment processing
+    - Handle success/failure scenarios
+  - [ ] Order Creation:
+    - Create order in database
+    - Send confirmation email
+    - Update inventory
 - [ ] User dashboard:
-  - Order history
-  - Profile management
-  - Saved addresses
-  - Wishlist
+  - [ ] Profile Management:
+    - Edit personal information
+    - Change password
+    - Profile picture upload
+  - [ ] Order History:
+    - List all orders
+    - Order details view
+    - Order status tracking
+  - [ ] Address Management:
+    - Add/edit/delete addresses
+    - Set default address
+    - Address validation
 
 ### 4. Admin Dashboard [ ]
 - [ ] Admin authentication and authorization
@@ -132,7 +166,6 @@
 - [ ] Real-time notifications
 - [ ] Email system (Resend):
   - Order confirmations
-  - Shipping updates
   - Password reset
 - [ ] Search optimization
 - [ ] Performance optimization:

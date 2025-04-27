@@ -3,10 +3,10 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { User, LogOut, Menu } from 'lucide-react'
+import { User, LogOut, Menu, LayoutDashboard, ShoppingBag, UserCircle } from 'lucide-react'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
-import { CartBadge } from '@/components/layout/cart-badge'
+import { CartBadge } from '@/components/cart-badge'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -101,7 +101,22 @@ export function Header() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href='/dashboard/profile'>Profile</Link>
+                    <Link href='/dashboard' className='flex items-center'>
+                      <LayoutDashboard className='mr-2 h-4 w-4' />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href='/dashboard/orders' className='flex items-center'>
+                      <ShoppingBag className='mr-2 h-4 w-4' />
+                      My Orders
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href='/dashboard/profile' className='flex items-center'>
+                      <UserCircle className='mr-2 h-4 w-4' />
+                      Profile
+                    </Link>
                   </DropdownMenuItem>
                   {session.user.role === 'ADMIN' && (
                     <>
@@ -122,13 +137,20 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button 
-                variant='default' 
-                onClick={() => signIn()}
-                className='bg-blue-600 hover:bg-blue-700 text-white'
-              >
-                Sign In
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='ghost' size='icon'>
+                    <User className='h-5 w-5' />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end' className='w-60'>
+                  <DropdownMenuLabel>Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => signIn()}>
+                    Sign In
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
 
             {/* Mobile menu button */}

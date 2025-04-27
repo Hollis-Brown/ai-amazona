@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useCart } from '@/store/use-cart'
+import { useCartStore } from '@/lib/store/cart'
 import { useToast } from '@/hooks/use-toast'
 import { ToastAction } from '@/components/ui/toast'
 import Link from 'next/link'
@@ -30,18 +30,23 @@ interface ProductInfoProps {
 
 export function ProductInfo({ product }: ProductInfoProps) {
   const [quantity, setQuantity] = useState('1')
-  const cart = useCart()
+  const addItem = useCartStore((state) => state.addItem)
   const { toast } = useToast()
 
   const handleAddToCart = () => {
-    cart.addItem({
-      productId: product.id,
+    // Create a cart item with the correct structure
+    const cartItem = {
+      id: product.id,
       name: product.name,
       price: product.price,
       image: product.images[0],
       quantity: parseInt(quantity),
-    })
-
+    }
+    
+    // Add to cart
+    addItem(cartItem)
+    
+    // Show toast notification
     toast({
       title: 'Added to cart',
       description: `${quantity} x ${product.name} added to your cart`,
