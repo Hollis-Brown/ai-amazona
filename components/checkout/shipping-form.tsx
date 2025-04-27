@@ -18,72 +18,37 @@ import { Input } from '@/components/ui/input'
 import { useCartStore } from '@/lib/store/cart'
 import { useToast } from '@/hooks/use-toast'
 
-const shippingFormSchema = z.object({
+const shippingSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  address: z.string().min(5, 'Address must be at least 5 characters'),
-  city: z.string().min(2, 'City must be at least 2 characters'),
-  state: z.string().min(2, 'State must be at least 2 characters'),
-  zipCode: z.string().min(5, 'ZIP code must be at least 5 characters'),
-  country: z.string().min(2, 'Country must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email address'),
 })
 
-type ShippingFormValues = z.infer<typeof shippingFormSchema>
+type ShippingFormValues = z.infer<typeof shippingSchema>
 
 export function ShippingForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+  const items = useCartStore((state) => state.items)
+  const getTotalPrice = useCartStore((state) => state.getTotalPrice)
 
   const form = useForm<ShippingFormValues>({
-    resolver: zodResolver(shippingFormSchema),
+    resolver: zodResolver(shippingSchema),
     defaultValues: {
       fullName: '',
       email: '',
-      address: '',
-      city: '',
-      state: '',
-      zipCode: '',
-      country: '',
     },
   })
-
-  const { items, getTotalPrice, clearCart } = useCartStore()
-
-  const subtotal = getTotalPrice()
-  const tax = subtotal * 0.1 // 10% tax
-  const total = subtotal + tax
 
   async function onSubmit(data: ShippingFormValues) {
     try {
       setLoading(true)
-
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          items: items,
-          shippingInfo: data,
-          subtotal,
-          tax,
-          shipping: 10, // Fixed shipping cost
-          total,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to create order')
-      }
-
-      const { orderId } = await response.json()
-
-      // Clear cart after successful order creation
-      clearCart()
-
+      
+      // Store shipping info in session storage for the payment page
+      sessionStorage.setItem('shippingInfo', JSON.stringify(data))
+      
       // Redirect to payment page
-      router.push(`/payment/${orderId}`)
+      router.push('/checkout/payment')
     } catch (error) {
       console.error('[SHIPPING_FORM]', error)
       toast({
@@ -202,7 +167,7 @@ export function ShippingForm() {
         </div>
 
         <Button type='submit' className='w-full' disabled={loading}>
-          {loading ? 'Creating Order...' : 'Continue to Payment'}
+          {loading ? 'Processing...' : 'Continue to Payment'}
         </Button>
       </form>
     </Form>

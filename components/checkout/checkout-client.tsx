@@ -4,10 +4,10 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store/cart'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { CustomerForm } from '@/components/checkout/customer-form'
+import { ShippingForm } from '@/components/checkout/shipping-form'
 import { OrderSummary } from '@/components/checkout/order-summary'
 
-export default function CheckoutPage() {
+export default function CheckoutClient() {
   const router = useRouter()
   const items = useCartStore((state) => state.items)
 
@@ -29,10 +29,10 @@ export default function CheckoutPage() {
         <div className="h-fit">
           <Card>
             <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
+              <CardTitle>Shipping Information</CardTitle>
             </CardHeader>
             <CardContent>
-              <CustomerForm />
+              <ShippingForm />
             </CardContent>
           </Card>
         </div>
