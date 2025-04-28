@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store/cart'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { Spinner } from '@/components/ui/spinner'
+import { useSession } from 'next-auth/react'
 
 interface OldCartItem {
   productId?: string
@@ -22,6 +23,7 @@ export default function CartPage() {
   const { items, removeItem, updateQuantity, getTotalPrice } = useCartStore()
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  const { data: session, status } = useSession()
 
   // Handle hydration and migration
   useEffect(() => {
@@ -49,7 +51,16 @@ export default function CartPage() {
     setIsLoading(false)
   }, [])
 
-  if (isLoading) {
+  // Check authentication status
+  useEffect(() => {
+    if (status === 'loading') return
+    
+    if (!session) {
+      router.push('/auth/signin?callbackUrl=/checkout/cart')
+    }
+  }, [session, status, router])
+
+  if (isLoading || status === 'loading') {
     return (
       <div className="space-y-8">
         <div className="flex items-center justify-between">
@@ -61,6 +72,11 @@ export default function CartPage() {
         </div>
       </div>
     )
+  }
+
+  // If not authenticated, don't render anything (will redirect)
+  if (!session) {
+    return null
   }
 
   return (

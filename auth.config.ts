@@ -1,4 +1,6 @@
 import type { NextAuthConfig } from 'next-auth'
+import Google from 'next-auth/providers/google'
+import GitHub from 'next-auth/providers/github'
 
 declare module 'next-auth' {
   interface User {
@@ -7,7 +9,23 @@ declare module 'next-auth' {
 }
 
 export default {
-  providers: [],
+  providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
+    }),
+    GitHub({
+      clientId: process.env.GITHUB_CLIENT_ID || '',
+      clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+    })
+  ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -15,7 +33,7 @@ export default {
         token.email = user.email
         token.name = user.name
         token.image = user.image
-        token.role = user.role
+        token.role = user.role || 'USER' // Default to USER role for OAuth logins
       }
       return token
     },

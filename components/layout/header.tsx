@@ -3,24 +3,16 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { User, LogOut, Menu, LayoutDashboard, ShoppingBag, UserCircle } from 'lucide-react'
+import { User, LogOut, LogIn, UserPlus } from 'lucide-react'
 import { useSession, signIn, signOut } from 'next-auth/react'
-import { Button } from '@/components/ui/button'
-import { CartBadge } from '@/components/cart-badge'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
+import { CartBadge } from '@/components/cart-badge'
 
 export function Header() {
   const { data: session } = useSession()
   const [activePath, setActivePath] = useState('/')
+  const [isOpen, setIsOpen] = useState(false)
 
-  // Set active path based on current route
   useEffect(() => {
     const path = window.location.pathname
     setActivePath(path)
@@ -29,7 +21,7 @@ export function Header() {
   const navItems = [
     { href: '/', label: 'Home' },
     { href: '/contact', label: 'Contact' },
-    { href: '/products', label: 'Products Catalog' },
+    { href: '/products', label: 'Products' },
   ]
 
   return (
@@ -38,13 +30,10 @@ export function Header() {
         <div className='flex h-20 items-center justify-between'>
           {/* Logo */}
           <div className='flex-shrink-0'>
-            <Link
-              href='/'
-              className='flex items-center'
-            >
+            <Link href='/' className='flex items-center'>
               <Image 
-                src='/images/logo.png' 
-                alt='AI Amazona Logo' 
+                src='/images/logo.png'
+                alt='AI Amazona Logo'
                 width={320}
                 height={80}
                 className='w-auto h-24'
@@ -78,61 +67,108 @@ export function Header() {
           <div className='flex items-center gap-4'>
             <CartBadge />
             {session ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-9 w-9 p-0"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <User className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="flex items-center">
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
-                      Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/orders" className="flex items-center">
-                      <ShoppingBag className="mr-2 h-4 w-4" />
-                      My Orders
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/profile" className="flex items-center">
-                      <UserCircle className="mr-2 h-4 w-4" />
-                      Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => signOut({ callbackUrl: '/' })}
-                    className="text-red-600 focus:bg-red-50 focus:text-red-600 cursor-pointer"
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="relative">
+                <button
+                  type="button"
+                  className="p-2 rounded-md hover:bg-gray-100"
+                  onClick={() => setIsOpen(!isOpen)}
+                  onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+                >
+                  <User className="h-5 w-5" />
+                </button>
+                {isOpen && (
+                  <div className="absolute right-0 mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="py-1">
+                      <Link
+                        href="/dashboard"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                      <Link
+                        href="/orders"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        My Orders
+                      </Link>
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setIsOpen(false)
+                          signOut()
+                        }}
+                        className="flex w-full items-center px-4 py-2 text-sm text-red-700 hover:bg-gray-100"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-9 w-9 p-0"
-                onClick={() => signIn()}
-              >
-                <User className="h-5 w-5" />
-              </Button>
+              <div className="relative">
+                <button
+                  type="button"
+                  className="p-2 rounded-md hover:bg-gray-100 flex items-center space-x-1"
+                  onClick={() => setIsOpen(!isOpen)}
+                  onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+                >
+                  <User className="h-5 w-5" />
+                </button>
+                {isOpen && (
+                  <div className="absolute right-0 mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="py-1">
+                      <Link
+                        href="/dashboard"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                      <Link
+                        href="/orders"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        My Orders
+                      </Link>
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                      <Link
+                        href="/auth/signin"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <LogIn className="mr-2 h-4 w-4" />
+                        Sign in
+                      </Link>
+                      <Link
+                        href="/auth/signup"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Sign up
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
-
-            {/* Mobile menu button */}
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-6 w-6" />
-            </Button>
           </div>
         </div>
       </div>
