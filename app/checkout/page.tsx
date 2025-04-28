@@ -3,22 +3,36 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store/cart'
+import { useSession } from 'next-auth/react'
+import { Spinner } from '@/components/ui/spinner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CustomerForm } from '@/components/checkout/customer-form'
 import { OrderSummary } from '@/components/checkout/order-summary'
 
 export default function CheckoutPage() {
+  const { items } = useCartStore()
   const router = useRouter()
-  const items = useCartStore((state) => state.items)
+  const { data: session, status } = useSession()
 
   useEffect(() => {
-    if (items.length === 0) {
-      router.push('/cart')
-    }
-  }, [items, router])
+    if (status === 'loading') return
 
-  if (items.length === 0) {
-    return null
+    if (!session) {
+      router.push('/auth/signin?callbackUrl=/checkout')
+      return
+    }
+
+    if (items.length === 0) {
+      router.push('/checkout/cart')
+    }
+  }, [items, session, status, router])
+
+  if (status === 'loading' || !session) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Spinner size="lg" />
+      </div>
+    )
   }
 
   return (

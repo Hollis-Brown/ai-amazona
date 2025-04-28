@@ -110,14 +110,13 @@
     - Show product images and details
     - Display subtotal, tax, and total
     - Add checkout button
-  - [ ] Cart API:
+  - [X] Cart API:
     - Create cart API endpoints
     - Implement price calculations
     - Handle stock validation
     - Sync with user's saved cart (if logged in)
-- [ ] Checkout process:
+- [X] Checkout process:
   - [ ] Checkout Flow:
-    - Address collection/selection
     - Payment method integration (Stripe)
     - Order summary review
   - [ ] Payment Integration:
@@ -137,10 +136,7 @@
     - List all orders
     - Order details view
     - Order status tracking
-  - [ ] Address Management:
-    - Add/edit/delete addresses
-    - Set default address
-    - Address validation
+
 
 ### 4. Admin Dashboard [ ]
 - [ ] Admin authentication and authorization

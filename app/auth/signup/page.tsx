@@ -16,62 +16,63 @@ import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import Link from "next/link"
 
-export default function SignInPage({
-  searchParams,
-}: {
-  searchParams: { callbackUrl?: string; error?: string }
-}) {
+export default function SignUpPage() {
   const router = useRouter()
-  const callbackUrl = searchParams?.callbackUrl || "/"
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
+  const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.message || 'Something went wrong')
+      }
+
+      // Sign in the user after successful registration
       const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
       })
+
       if (result?.error) {
-        setError("Invalid email or password")
+        setError("Error signing in after registration")
       } else {
-        router.push(callbackUrl)
+        router.push("/")
       }
     } catch (error) {
-      setError("An error occurred during sign in")
+      setError(error instanceof Error ? error.message : "An error occurred during sign up")
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignUp = async () => {
     setIsLoading(true)
-    setError("")
-    
     try {
-      console.log("Starting Google sign-in process...")
-      const result = await signIn("google", {
-        callbackUrl,
-        redirect: false,
+      await signIn("google", {
+        callbackUrl: "/",
+        redirect: true,
       })
-      
-      console.log("Sign-in result:", result)
-      
-      if (result?.error) {
-        setError(`Google sign-in error: ${result.error}`)
-        setIsLoading(false)
-      } else if (result?.url) {
-        // Redirect to the callback URL
-        window.location.href = result.url
-      }
     } catch (error) {
-      console.error("Google sign-in error:", error)
-      setError("An error occurred during Google sign in")
+      setError("An error occurred during Google sign up")
       setIsLoading(false)
     }
   }
@@ -80,21 +81,31 @@ export default function SignInPage({
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Sign in</CardTitle>
+          <CardTitle className="text-2xl text-center">Create an account</CardTitle>
           <CardDescription className="text-center">
-            Choose your preferred sign in method
+            Choose your preferred sign up method
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          {(searchParams?.error || error) && (
+          {error && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                {error || "An error occurred during sign in. Please try again."}
+                {error}
               </AlertDescription>
             </Alert>
           )}
-          <form onSubmit={handleEmailSignIn} className="space-y-4">
+          <form onSubmit={handleEmailSignUp} className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+            </div>
             <div className="space-y-2">
               <Input
                 type="email"
@@ -116,7 +127,7 @@ export default function SignInPage({
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in with Email"}
+              {isLoading ? "Creating account..." : "Sign up with Email"}
             </Button>
           </form>
           <div className="relative">
@@ -131,7 +142,7 @@ export default function SignInPage({
           </div>
           <Button 
             variant="outline" 
-            onClick={handleGoogleSignIn}
+            onClick={handleGoogleSignUp}
             className="flex items-center justify-center"
             disabled={isLoading}
           >
@@ -150,12 +161,12 @@ export default function SignInPage({
                 d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
               ></path>
             </svg>
-            {isLoading ? "Signing in..." : "Google"}
+            {isLoading ? "Signing up..." : "Google"}
           </Button>
           <div className="text-center text-sm">
-            Don't have an account?{" "}
-            <Link href="/auth/signup" className="text-primary hover:underline">
-              Sign up
+            Already have an account?{" "}
+            <Link href="/auth/signin" className="text-primary hover:underline">
+              Sign in
             </Link>
           </div>
         </CardContent>
