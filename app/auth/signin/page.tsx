@@ -13,7 +13,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 
 export default function SignInPage({
@@ -22,11 +22,22 @@ export default function SignInPage({
   searchParams: { callbackUrl?: string; error?: string }
 }) {
   const router = useRouter()
-  const callbackUrl = searchParams?.callbackUrl || "/"
+  const [callbackUrl, setCallbackUrl] = useState("/")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [searchParamsError, setSearchParamsError] = useState("")
+
+  // Use useEffect to safely access searchParams
+  useEffect(() => {
+    if (searchParams?.callbackUrl) {
+      setCallbackUrl(searchParams.callbackUrl)
+    }
+    if (searchParams?.error) {
+      setSearchParamsError(searchParams.error)
+    }
+  }, [searchParams])
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -86,7 +97,7 @@ export default function SignInPage({
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          {(searchParams?.error || error) && (
+          {(searchParamsError || error) && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>

@@ -136,11 +136,11 @@ function main() {
   console.log('2. Navigate to "APIs & Services" > "Credentials"');
   console.log('3. Find your OAuth 2.0 Client ID and click on it');
   console.log('4. Under "Authorized redirect URIs", add the following URI:');
-  console.log('   http://localhost:3001/api/auth/callback/google');
+  console.log('   http://localhost:3000/api/auth/callback/google');
   console.log('5. Click "Save"');
   console.log('');
   
-  rl.question('Enter your application URL (e.g., http://localhost:3001): ', (redirectUri) => {
+  rl.question('Enter your application URL (e.g., http://localhost:3000): ', (redirectUri) => {
     if (redirectUri) {
       if (updateEnvFile(envInfo, redirectUri)) {
         console.log('');
