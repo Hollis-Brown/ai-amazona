@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     const validatedData = addressSchema.parse(body)
 
     // Save or update the shipping address
-    const address = await db.shippingAddress.upsert({
+    const address = await db.address.upsert({
       where: {
         userId: session.user.id,
       },

@@ -21,17 +21,17 @@ export function OrderSummary() {
           <div key={item.id} className='flex items-start space-x-4 py-4'>
             <div className='relative h-16 w-16 overflow-hidden rounded-lg'>
               <Image
-                src={item.image}
-                alt={item.name}
+                src={item.product.images[0]}
+                alt={item.product.name}
                 fill
                 className='object-cover'
               />
             </div>
             <div className='flex-1 space-y-1'>
-              <h3 className='font-medium'>{item.name}</h3>
+              <h3 className='font-medium'>{item.product.name}</h3>
               <p className='text-sm text-gray-500'>Qty: {item.quantity}</p>
               <p className='text-sm font-medium'>
-                {formatPrice(item.price * item.quantity)}
+                {formatPrice(item.product.price * item.quantity)}
               </p>
             </div>
           </div>

@@ -57,19 +57,19 @@ export default function ConfirmationPage() {
                 <div key={item.id} className="flex items-center gap-4 p-4">
                   <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md">
                     <Image
-                      src={item.image}
-                      alt={item.name}
+                      src={item.product.images[0]}
+                      alt={item.product.name}
                       fill
                       className="object-cover"
                     />
                   </div>
                   <div className="flex flex-1 flex-col text-left">
-                    <h4 className="font-medium">{item.name}</h4>
+                    <h4 className="font-medium">{item.product.name}</h4>
                     <p className="text-sm text-muted-foreground">
                       Quantity: {item.quantity}
                     </p>
                     <p className="text-sm font-medium">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      ${(item.product.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
                 </div>

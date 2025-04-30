@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
+import { Product } from '@/types'
 
 interface CartItem {
   id: string
-  productId: string
+  product: Product
   quantity: number
-  price: number
 }
 
 interface UserInfo {
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     }
 
     // Verify all products exist and are in stock
-    const productIds = items.map((item) => item.productId)
+    const productIds = items.map((item) => item.product.id)
     const products = await prisma.product.findMany({
       where: {
         id: {
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 
     // Check if all products exist
     if (products.length !== items.length) {
-      const foundProductIds = products.map((p) => p.id)
+      const foundProductIds = products.map((p: Product) => p.id)
       const missingProductIds = productIds.filter(
         (id) => !foundProductIds.includes(id)
       )
@@ -73,25 +73,26 @@ export async function POST(req: Request) {
 
     // Check stock levels
     const insufficientStock = items.filter((item) => {
-      const product = products.find((p) => p.id === item.productId)
+      const product = products.find((p: Product) => p.id === item.product.id)
       return product && product.stock < item.quantity
     })
 
     if (insufficientStock.length > 0) {
       return new NextResponse(
         `Insufficient stock for products: ${insufficientStock
-          .map((item) => item.productId)
+          .map((item) => item.product.id)
           .join(', ')}`,
         { status: 400 }
       )
     }
 
     // Start a transaction to ensure all operations succeed or fail together
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await prisma.$transaction(async (tx: any) => {
       // Create a temporary address for the order (required by schema)
       const address = await tx.address.create({
         data: {
-          street: "Digital Delivery",
+          fullName: userInfo.fullName,
+          addressLine1: "Digital Delivery",
           city: "Online",
           state: "Digital",
           postalCode: "00000",
@@ -112,9 +113,9 @@ export async function POST(req: Request) {
           total,
           items: {
             create: items.map((item) => ({
-              productId: item.productId,
+              productId: item.product.id,
               quantity: item.quantity,
-              price: item.price,
+              price: item.product.price,
             })),
           },
         },
@@ -127,7 +128,7 @@ export async function POST(req: Request) {
       // Update product stock levels
       for (const item of items) {
         await tx.product.update({
-          where: { id: item.productId },
+          where: { id: item.product.id },
           data: {
             stock: {
               decrement: item.quantity,

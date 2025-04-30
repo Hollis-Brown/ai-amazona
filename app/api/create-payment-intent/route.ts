@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
     // Calculate total amount
     const amount = items.reduce(
-      (total: number, item: CartItem) => total + item.price * item.quantity,
+      (total: number, item: CartItem) => total + item.product.price * item.quantity,
       0
     )
 
@@ -37,12 +37,13 @@ export async function POST(req: Request) {
       currency: 'usd',
       payment_method_types: ['card'],
       metadata: {
-        ...customerDetails,
+        orderId: '',
         items: JSON.stringify(
-          items.map((item: CartItem) => ({
+          items.map((item) => ({
             id: item.id,
-            name: item.name,
+            name: item.product.name,
             quantity: item.quantity,
+            price: item.product.price,
           }))
         ),
       },

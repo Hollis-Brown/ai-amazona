@@ -3,7 +3,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Address } from '@prisma/client'
+import { Address } from '@/types'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 import { MapPin, Trash2, Star, StarOff } from 'lucide-react'
@@ -96,7 +96,7 @@ export function AddressList({ addresses }: AddressListProps) {
         >
           <div className='space-y-1'>
             <div className='flex items-center gap-2'>
-              <p className='font-medium'>{address.street}</p>
+              <p className='font-medium'>{address.addressLine1}</p>
               {address.isDefault && (
                 <span className='rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary'>
                   Default

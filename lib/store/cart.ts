@@ -1,11 +1,10 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
+import { Product } from '@/types'
 
 export type CartItem = {
   id: string
-  name: string
-  price: number
-  image: string
+  product: Product
   quantity: number
 }
 
@@ -66,7 +65,7 @@ export const useCartStore = create<CartStore>()(
       
       getTotalPrice: () => {
         return get().items.reduce(
-          (total, item) => total + item.price * item.quantity,
+          (total, item) => total + item.product.price * item.quantity,
           0
         )
       },

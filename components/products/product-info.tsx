@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useCartStore } from '@/lib/store/cart'
 import { Button } from '@/components/ui/button'
 import { AddToCartDialog } from '@/components/ui/add-to-cart-dialog'
-import { Product } from '@prisma/client'
+import { Product } from '@/types'
 import { ShoppingCart } from 'lucide-react'
 import {
   Select,
@@ -31,9 +31,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const handleAddToCart = () => {
     addItem({
       id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.images[0],
+      product,
       quantity: parseInt(quantity),
     })
     setDialogOpen(true)

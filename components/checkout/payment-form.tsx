@@ -30,7 +30,11 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
-export function PaymentForm() {
+interface PaymentFormProps {
+  orderId: string
+}
+
+export function PaymentForm({ orderId }: PaymentFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   
@@ -58,8 +62,8 @@ export function PaymentForm() {
       // Store payment info in session (you might want to handle this differently in production)
       sessionStorage.setItem('paymentProcessed', 'true')
       
-      // Navigate to review page
-      router.push('/checkout/review')
+      // Navigate to order confirmation page
+      router.push(`/order-confirmation/${orderId}`)
     } catch (error) {
       console.error('Payment error:', error)
       setIsSubmitting(false)
@@ -134,7 +138,7 @@ export function PaymentForm() {
           className="w-full" 
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Processing...' : 'Continue to Review'}
+          {isSubmitting ? 'Processing...' : 'Pay Now'}
         </Button>
       </form>
     </Form>

@@ -15,16 +15,16 @@ export async function POST(req: Request) {
       payment_method_types: ['card'],
       customer_email: customerDetails.email,
       line_items: items.map((item: CartItem) => ({
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: item.name,
-          images: [item.image],
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.product.name,
+            images: [item.product.images[0]],
             description: 'Digital course access',
+          },
+          unit_amount: Math.round(item.product.price * 100), // Convert to cents
         },
-          unit_amount: Math.round(item.price * 100), // Convert to cents
-      },
-      quantity: item.quantity,
+        quantity: item.quantity,
       })),
       mode: 'payment',
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,

@@ -1,13 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-export async function GET(request: NextRequest) {
-  try {
-    const searchParams = request.nextUrl.searchParams
-    const categoryId = searchParams.get('categoryId')
-    const currentProductId = searchParams.get('currentProductId')
+export const dynamic = 'force-dynamic'
 
-    if (!categoryId || !currentProductId) {
+interface RouteParams {
+  params: {
+    categoryId: string
+    productId: string
+  }
+}
+
+export async function GET(request: Request, { params }: RouteParams) {
+  try {
+    const { categoryId, productId } = params
+
+    if (!categoryId || !productId) {
       return NextResponse.json(
         { error: 'Missing required parameters' },
         { status: 400 }
@@ -18,7 +25,7 @@ export async function GET(request: NextRequest) {
       where: {
         categoryId,
         id: {
-          not: currentProductId,
+          not: productId,
         },
       },
       take: 6,
@@ -40,4 +47,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+} 
