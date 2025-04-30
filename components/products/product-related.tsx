@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Product } from '@prisma/client'
+import { Product } from '@/types'
 import { ProductCard } from '@/components/ui/product-card'
 import {
   Carousel,

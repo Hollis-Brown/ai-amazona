@@ -54,7 +54,7 @@ export function ProductCard({ product, showFullDescription = false }: ProductCar
       <Link href={`/products/${product.id}`} className="flex-1 flex flex-col">
         <div className="relative aspect-square">
           <Image
-            src={product.images[0]}
+            src={product.images[0] || '/placeholder.png'}
             alt={product.name}
             fill
             className="object-cover transition-transform group-hover:scale-105"
@@ -63,7 +63,9 @@ export function ProductCard({ product, showFullDescription = false }: ProductCar
         <CardHeader className="p-4 flex-1">
           <h3 className="font-semibold">{product.name}</h3>
           <CardDescription className={showFullDescription ? '' : 'line-clamp-2'}>
-            {product.description}
+            {showFullDescription
+              ? product.description
+              : `${product.description.slice(0, 100)}...`}
           </CardDescription>
           {(product.courseDates || product.courseTime || product.courseLength) && (
             <div className="mt-4 space-y-1 text-sm text-muted-foreground border-t pt-4">
