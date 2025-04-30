@@ -23,8 +23,8 @@ export default function SignInPage({
 }) {
   const router = useRouter()
   const [callbackUrl, setCallbackUrl] = useState("/")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("test@example.com")
+  const [password, setPassword] = useState("password")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [searchParamsError, setSearchParamsError] = useState("")
@@ -93,7 +93,7 @@ export default function SignInPage({
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Sign in</CardTitle>
           <CardDescription className="text-center">
-            Choose your preferred sign in method
+            Enter your credentials to sign in
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -101,35 +101,48 @@ export default function SignInPage({
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                {error || "An error occurred during sign in. Please try again."}
+                {searchParamsError || error}
               </AlertDescription>
             </Alert>
           )}
           <form onSubmit={handleEmailSignIn} className="space-y-4">
             <div className="space-y-2">
               <Input
+                id="email"
                 type="email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
               <Input
+                id="password"
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                disabled={isLoading}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in with Email"}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
+          <div className="text-center text-sm">
+            <p className="text-gray-500">
+              For testing purposes, use:
+              <br />
+              Email: test@example.com
+              <br />
+              Password: password
+            </p>
+          </div>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
