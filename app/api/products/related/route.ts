@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const searchParams = request.nextUrl.searchParams
     const categoryId = searchParams.get('categoryId')
     const currentProductId = searchParams.get('currentProductId')
 
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const relatedProducts = await prisma.product.findMany({
+    const relatedProducts = await db.product.findMany({
       where: {
         categoryId,
         id: {
@@ -23,7 +23,12 @@ export async function GET(request: NextRequest) {
       },
       take: 6,
       include: {
-        category: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     })
 
@@ -31,7 +36,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching related products:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal Server Error' },
       { status: 500 }
     )
   }

@@ -85,13 +85,16 @@
 - [X] Homepage:
   - banner
   - latest products
-- [ ] Products Catalog:
+- [X] Products Catalog:
   - Product listing page
   - Category filtering
-- [ ] Product pages:
-  - Product details
-  - Image gallery
-  - Add to cart functionality
+  - Search functionality
+- [X] Product pages:
+  - [X] Product details page
+  - [X] Image gallery
+  - [X] Add to cart functionality
+  - [X] Related products
+  - [X] Reviews section
 - [ ] Shopping cart:
   - [ ] Cart State Management:
     - Set up Zustand store for cart

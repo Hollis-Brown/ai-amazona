@@ -11,7 +11,6 @@ const protectedPaths = [
   "/api/checkout",
   "/cart",
   "/checkout",
-  "/products/[id]", // Protect individual product pages
   "/api/cart", // Protect cart API endpoints
   "/payment" // Protect payment pages
 ]
@@ -59,11 +58,10 @@ export const config = {
     "/profile/:path*",
     "/orders/:path*",
     "/admin/:path*",
-    "/api/checkout/:path*", // Match the checkout API route
+    "/api/checkout/:path*",
     "/auth/:path*",
     "/cart/:path*",
     "/checkout/:path*",
     "/payment/:path*",
-    "/products/:path*", // Match product pages
   ],
 }

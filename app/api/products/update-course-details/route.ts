@@ -9,9 +9,9 @@ export async function GET() {
         name: 'Shadows of the Past: Unpacking US History'
       },
       data: {
-        courseDates: 'January 15, 2024 - March 15, 2024',
-        courseTime: 'Tuesdays and Thursdays, 6:00 PM - 8:00 PM EST',
-        courseLength: '8 weeks (32 hours total)'
+        courseDates: 'Consecutive Sundays, 8 June – 3 August',
+        courseTime: '16:00 GMT / 17:00 CET',
+        courseLength: '90 minutes'
       }
     })
 
@@ -21,9 +21,9 @@ export async function GET() {
         name: 'The Obscured Path Shaping the United States from 1900–1950'
       },
       data: {
-        courseDates: 'March 18, 2024 - May 17, 2024',
-        courseTime: 'Mondays and Wednesdays, 7:00 PM - 9:00 PM EST',
-        courseLength: '8 weeks (32 hours total)'
+        courseDates: 'Consecutive Tuesdays, 10 June – 5 August',
+        courseTime: '7:00 GMT / 8:00 CET',
+        courseLength: '90 minutes'
       }
     })
 
