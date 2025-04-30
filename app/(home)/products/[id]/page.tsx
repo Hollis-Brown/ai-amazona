@@ -11,22 +11,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import Image from 'next/image'
-
-interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  images: string[]
-  categoryId: string
-  category: {
-    id: string
-    name: string
-  }
-  courseDates?: string
-  courseTime?: string
-  courseLength?: string
-}
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Product } from '@/types'
 
 export default function ProductPage() {
   const params = useParams()
@@ -34,6 +26,7 @@ export default function ProductPage() {
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
+  const [quantity, setQuantity] = useState(1)
   const addItem = useCartStore((state) => state.addItem)
 
   useEffect(() => {
@@ -41,6 +34,7 @@ export default function ProductPage() {
       try {
         const response = await fetch(`/api/products/${params.id}`)
         const data = await response.json()
+        console.log('Product data:', data)
         setProduct(data)
       } catch (error) {
         console.error('Error fetching product:', error)
@@ -64,15 +58,13 @@ export default function ProductPage() {
 
     addItem({
       id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.images[0],
-      quantity: 1,
+      product,
+      quantity: quantity,
     })
 
     toast({
       title: 'Added to cart',
-      description: `${product.name} has been added to your cart`,
+      description: `${quantity} ${product.name} has been added to your cart`,
       action: (
         <Button
           variant="outline"
@@ -175,7 +167,25 @@ export default function ProductPage() {
             </div>
           )}
           
-          <div className='mt-4'>
+          <div className='mt-4 space-y-4'>
+            <div className='flex items-center gap-4'>
+              <span className='font-medium'>Quantity:</span>
+              <Select
+                value={quantity.toString()}
+                onValueChange={(value) => setQuantity(parseInt(value))}
+              >
+                <SelectTrigger className='w-[100px]'>
+                  <SelectValue placeholder='Select quantity' />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <SelectItem key={num} value={num.toString()}>
+                      {num}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <Button onClick={handleAddToCart} size='lg' className='w-full gap-2'>
               Add to Cart
               <ShoppingCart className='h-4 w-4' />

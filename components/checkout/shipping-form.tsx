@@ -21,6 +21,11 @@ import { useToast } from '@/hooks/use-toast'
 const shippingSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
+  address: z.string().min(1, 'Address is required'),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().min(1, 'State is required'),
+  postalCode: z.string().min(1, 'Postal code is required'),
+  country: z.string().min(1, 'Country is required'),
 })
 
 type ShippingFormValues = z.infer<typeof shippingSchema>
@@ -139,12 +144,12 @@ export function ShippingForm() {
         <div className='grid grid-cols-2 gap-4'>
           <FormField
             control={form.control}
-            name='zipCode'
+            name='postalCode'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>ZIP Code</FormLabel>
                 <FormControl>
-                  <Input placeholder='10001' {...field} />
+                  <Input placeholder='12345' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

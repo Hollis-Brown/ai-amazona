@@ -1,113 +1,155 @@
-import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
-import { formatPrice } from '@/lib/utils'
-import { CheckCircle } from 'lucide-react'
-import { Order, OrderItem, Product, Address } from '@prisma/client'
-
-type OrderParams = Promise<{ id: string }>
-
-interface PageProps {
-  params: OrderParams
-}
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import Image from 'next/image'
+import { Order, OrderItem } from '@/types'
 
 interface OrderWithRelations extends Order {
   items: (OrderItem & {
-    product: Product
+    product: {
+      id: string
+      name: string
+      images: string[]
+      price: number
+    }
   })[]
-  shippingAddress: Address
+  shippingAddress: {
+    id: string
+    addressLine1: string
+    addressLine2: string | null
+    city: string
+    state: string
+    postalCode: string
+    country: string
+  }
 }
 
-export default async function OrderConfirmationPage({ params }: PageProps) {
-  const { id } = await params
+export default async function OrderConfirmationPage({
+  params,
+}: {
+  params: { id: string }
+}) {
   const session = await auth()
 
   if (!session?.user) {
-    redirect('/api/auth/signin')
+    redirect('/sign-in')
   }
 
-  const order = (await prisma.order.findUnique({
+  const order = await prisma.order.findUnique({
     where: {
-      id: id,
+      id: params.id,
       userId: session.user.id,
     },
     include: {
       items: {
         include: {
-          product: true,
+          product: {
+            select: {
+              id: true,
+              name: true,
+              images: true,
+              price: true,
+            },
+          },
         },
       },
       shippingAddress: true,
     },
-  })) as OrderWithRelations | null
+  }) as OrderWithRelations | null
 
   if (!order) {
-    redirect('/')
+    redirect('/dashboard/orders')
   }
 
   return (
-    <div className='min-h-[calc(100vh-4rem)] flex items-center justify-center py-10 px-4'>
-      <div className='w-full max-w-2xl'>
-        <div className='rounded-lg border p-8 space-y-6 bg-white shadow-sm'>
-          <div className='flex items-center space-x-4'>
-            <CheckCircle className='h-8 w-8 text-green-500' />
-            <div>
-              <h1 className='text-2xl font-bold'>Order Confirmed!</h1>
-              <p className='text-gray-500'>Order #{id}</p>
+    <div className='space-y-8'>
+      <div>
+        <h2 className='text-3xl font-bold tracking-tight'>Order Confirmation</h2>
+        <p className='text-muted-foreground'>
+          Thank you for your purchase! Your order has been confirmed.
+        </p>
+      </div>
+      <Card>
+        <CardContent className='p-6'>
+          <div className='space-y-6'>
+            <div className='flex items-center justify-between'>
+              <div>
+                <p className='font-medium'>Order #{order.id.slice(-8)}</p>
+                <p className='text-sm text-muted-foreground'>
+                  {new Date(order.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <Badge
+                variant={
+                  order.status === 'DELIVERED'
+                    ? 'default'
+                    : order.status === 'CANCELLED'
+                    ? 'destructive'
+                    : 'secondary'
+                }
+                className='capitalize'
+              >
+                {order.status.toLowerCase()}
+              </Badge>
             </div>
-          </div>
-
-          <div className='space-y-4'>
-            <h2 className='text-lg font-semibold'>Order Summary</h2>
             <div className='divide-y'>
-              {order.items.map((item) => (
-                <div key={item.id} className='flex justify-between py-4'>
-                  <div>
-                    <p className='font-medium'>{item.product.name}</p>
-                    <p className='text-sm text-gray-500'>
-                      Qty: {item.quantity}
-                    </p>
+              {order.items.map((item: OrderItem & { product: { id: string; name: string; images: string[]; price: number } }) => (
+                <div
+                  key={item.id}
+                  className='flex items-center justify-between py-4'
+                >
+                  <div className='flex items-center space-x-4'>
+                    <Image
+                      src={item.product.images[0]}
+                      alt={item.product.name}
+                      width={48}
+                      height={48}
+                      className='object-cover'
+                    />
+                    <div>
+                      <p className='font-medium'>{item.product.name}</p>
+                      <p className='text-sm text-muted-foreground'>
+                        Quantity: {item.quantity}
+                      </p>
+                    </div>
                   </div>
                   <p className='font-medium'>
-                    {formatPrice(item.price * item.quantity)}
+                    ${(item.product.price * item.quantity).toFixed(2)}
                   </p>
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className='space-y-2'>
-            <div className='flex justify-between'>
-              <span>Subtotal</span>
-              <span>{formatPrice(order.total)}</span>
+            <div>
+              <h2 className='text-lg font-semibold'>Shipping Address</h2>
+              <div className='text-gray-500'>
+                {order.shippingAddress.addressLine1}
+                {order.shippingAddress.addressLine2 && (
+                  <>
+                    <br />
+                    {order.shippingAddress.addressLine2}
+                  </>
+                )}
+                <br />
+                {order.shippingAddress.city}, {order.shippingAddress.state}{' '}
+                {order.shippingAddress.postalCode}
+                <br />
+                {order.shippingAddress.country}
+              </div>
             </div>
-            <div className='flex justify-between'>
-              <span>Shipping</span>
-              <span>{formatPrice(10)}</span>
-            </div>
-            <div className='flex justify-between'>
-              <span>Tax</span>
-              <span>{formatPrice(order.total * 0.1)}</span>
-            </div>
-            <div className='flex justify-between font-bold'>
-              <span>Total</span>
-              <span>{formatPrice(order.total + 10 + order.total * 0.1)}</span>
-            </div>
-          </div>
-
-          <div className='space-y-2'>
-            <h2 className='text-lg font-semibold'>Shipping Address</h2>
-            <div className='text-gray-500'>
-              {order.shippingAddress.street}
-              <br />
-              {order.shippingAddress.city}, {order.shippingAddress.state}{' '}
-              {order.shippingAddress.postalCode}
-              <br />
-              {order.shippingAddress.country}
+            <div className='flex justify-end border-t pt-4'>
+              <div className='text-right'>
+                <p className='text-sm text-muted-foreground'>Total</p>
+                <p className='text-2xl font-bold'>
+                  ${order.items.reduce((sum: number, item: OrderItem & { product: { id: string; name: string; images: string[]; price: number } }) => 
+                    sum + item.product.price * item.quantity, 0).toFixed(2)}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -115,17 +115,17 @@ export default function CartPage() {
                   <div key={item.id} className="flex gap-6 pt-6 first:pt-0">
                     <div className="relative h-64 w-64 flex-shrink-0 overflow-hidden rounded-lg">
                       <Image
-                        src={item.image}
-                        alt={item.name}
+                        src={item.product.images[0]}
+                        alt={item.product.name}
                         fill
                         className="object-cover"
                       />
                     </div>
                     <div className="flex flex-1 flex-col gap-4">
                       <div>
-                        <h3 className="text-xl font-semibold">{item.name}</h3>
+                        <h3 className="text-xl font-semibold">{item.product.name}</h3>
                         <p className="text-lg text-muted-foreground">
-                          ${item.price.toFixed(2)}
+                          ${item.product.price.toFixed(2)}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -173,9 +173,9 @@ export default function CartPage() {
               <Button 
                 className="mt-4 w-full" 
                 size="lg" 
-                onClick={() => router.push('/checkout')}
+                onClick={() => router.push('/checkout/payment')}
               >
-                Proceed to Checkout
+                Proceed to Payment
               </Button>
             </Card>
           </div>
