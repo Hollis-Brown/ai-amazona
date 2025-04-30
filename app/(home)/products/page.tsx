@@ -4,7 +4,13 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { ProductGrid } from '@/components/products/product-grid'
 import { ProductSidebar } from '@/components/products/product-sidebar'
-import { Product } from '@prisma/client'
+import { Product } from '@/types'
+
+interface ProductsResponse {
+  products: Product[]
+  total: number
+  perPage: number
+}
 
 export default function ProductsPage() {
   const searchParams = useSearchParams()
@@ -33,7 +39,7 @@ export default function ProductsPage() {
         })
 
         const response = await fetch(`/api/products?${queryParams}`)
-        const data = await response.json()
+        const data: ProductsResponse = await response.json()
 
         setProducts(data.products)
         setTotalPages(Math.ceil(data.total / data.perPage))

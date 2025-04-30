@@ -85,37 +85,34 @@
 - [X] Homepage:
   - banner
   - latest products
-- [X] Products Catalog:
+- [ ] Products Catalog:
   - Product listing page
   - Category filtering
-  - Search functionality
-  - Pagination
-- [X] Product pages:
+- [ ] Product pages:
   - Product details
   - Image gallery
-  - Reviews and ratings
   - Add to cart functionality
-- [X] Shopping cart:
-  - [X] Cart State Management:
+- [ ] Shopping cart:
+  - [ ] Cart State Management:
     - Set up Zustand store for cart
     - Implement add/remove/update quantity actions
     - Persist cart data in localStorage
-  - [X] Cart Components:
+  - [ ] Cart Components:
     - Create CartItem component
     - Create CartSummary component
     - Implement quantity controls
     - Add remove item functionality
-  - [X] Cart Page Layout:
+  - [ ] Cart Page Layout:
     - Create responsive grid layout
     - Show product images and details
-    - Display subtotal, tax, and total
+    - Display subtotal and total
     - Add checkout button
-  - [X] Cart API:
+  - [ ] Cart API:
     - Create cart API endpoints
     - Implement price calculations
     - Handle stock validation
     - Sync with user's saved cart (if logged in)
-- [X] Checkout process:
+- [ ] Checkout process:
   - [ ] Checkout Flow:
     - Payment method integration (Stripe)
     - Order summary review

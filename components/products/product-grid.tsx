@@ -1,7 +1,7 @@
-import { Product } from '@prisma/client'
 import { ProductCard } from '@/components/ui/product-card'
 import { Pagination } from '@/components/ui/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Product } from '@/types'
 
 interface ProductGridProps {
   products: Product[]

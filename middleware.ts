@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { getToken } from "next-auth/jwt"
+import { auth } from "@/auth"
 
 // Add paths that require authentication
 const protectedPaths = [
@@ -17,22 +17,7 @@ const protectedPaths = [
 ]
 
 export async function middleware(request: NextRequest) {
-  // Get the secret from environment variables
-  const secret = process.env.AUTH_SECRET
-  
-  if (!secret) {
-    console.error("AUTH_SECRET is not defined in environment variables")
-    // Return a 500 error response
-    return new NextResponse(
-      JSON.stringify({ error: "Authentication configuration error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    )
-  }
-
-  const token = await getToken({
-    req: request,
-    secret: secret,
-  })
+  const session = await auth()
 
   const { pathname } = request.nextUrl
 
@@ -47,14 +32,14 @@ export async function middleware(request: NextRequest) {
   })
   
   // Redirect to signin if accessing protected route without auth
-  if (isProtectedPath && !token) {
+  if (isProtectedPath && !session) {
     const signInUrl = new URL("/auth/signin", request.url)
     signInUrl.searchParams.set("callbackUrl", pathname)
     return NextResponse.redirect(signInUrl)
   }
   
   // Redirect to home if authenticated user tries to access auth pages
-  if (token && pathname.startsWith("/auth")) {
+  if (session && pathname.startsWith("/auth")) {
     return NextResponse.redirect(new URL("/", request.url))
   }
   

@@ -115,12 +115,12 @@ export function ProductSidebar() {
         </Select>
       </div>
 
-      <div className='space-y-2'>
-        <Button onClick={handleFilter} className='w-full'>
+      <div className='flex gap-2'>
+        <Button onClick={handleFilter} className='flex-1'>
           Apply Filters
         </Button>
-        <Button onClick={handleReset} variant='outline' className='w-full'>
-          Reset Filters
+        <Button onClick={handleReset} variant='outline'>
+          Reset
         </Button>
       </div>
     </div>
