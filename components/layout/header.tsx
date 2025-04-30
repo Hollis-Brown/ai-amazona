@@ -25,7 +25,7 @@ export function Header() {
   ]
 
   return (
-    <header className='bg-white shadow-sm'>
+    <header className='bg-white shadow-sm sticky top-0 z-50'>
       <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex h-20 items-center justify-between'>
           {/* Logo */}
@@ -52,7 +52,7 @@ export function Header() {
                     className={cn(
                       'text-base font-medium transition-colors px-3 py-1 rounded-md',
                       activePath === item.href
-                        ? 'text-gray-900 outline outline-2 outline-gray-900'
+                        ? 'text-gray-900'
                         : 'text-gray-700 hover:text-gray-900'
                     )}
                   >
@@ -66,109 +66,76 @@ export function Header() {
           {/* Right Section */}
           <div className='flex items-center gap-4'>
             <CartBadge />
-            {session ? (
-              <div className="relative">
-                <button
-                  type="button"
-                  className="p-2 rounded-md hover:bg-gray-100"
-                  onClick={() => setIsOpen(!isOpen)}
-                  onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-                >
-                  <User className="h-5 w-5" />
-                </button>
-                {isOpen && (
-                  <div className="absolute right-0 mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                    <div className="py-1">
-                      <Link
-                        href="/dashboard"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Dashboard
-                      </Link>
-                      <Link
-                        href="/orders"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        My Orders
-                      </Link>
-                      <Link
-                        href="/profile"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Profile
-                      </Link>
-                      <button
-                        onClick={() => {
-                          setIsOpen(false)
-                          signOut()
-                        }}
-                        className="flex w-full items-center px-4 py-2 text-sm text-red-700 hover:bg-gray-100"
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Sign out
-                      </button>
-                    </div>
+            <div className="relative">
+              <button
+                type="button"
+                className="p-2 rounded-md hover:bg-gray-100 flex items-center space-x-1"
+                onClick={() => setIsOpen(!isOpen)}
+                onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+              >
+                <User className="h-5 w-5" />
+              </button>
+              {isOpen && (
+                <div className="absolute right-0 mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                  <div className="py-1">
+                    {session ? (
+                      <>
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          Dashboard
+                        </Link>
+                        <Link
+                          href="/orders"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          My Orders
+                        </Link>
+                        <Link
+                          href="/profile"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          Profile
+                        </Link>
+                        <button
+                          onClick={() => {
+                            signOut()
+                            setIsOpen(false)
+                          }}
+                          className="flex w-full items-center px-4 py-2 text-sm text-red-700 hover:bg-gray-100"
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Sign out
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Link
+                          href="/auth/signin"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          <LogIn className="mr-2 h-4 w-4" />
+                          Sign in
+                        </Link>
+                        <Link
+                          href="/auth/signup"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          <UserPlus className="mr-2 h-4 w-4" />
+                          Sign up
+                        </Link>
+                      </>
+                    )}
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className="relative">
-                <button
-                  type="button"
-                  className="p-2 rounded-md hover:bg-gray-100 flex items-center space-x-1"
-                  onClick={() => setIsOpen(!isOpen)}
-                  onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-                >
-                  <User className="h-5 w-5" />
-                </button>
-                {isOpen && (
-                  <div className="absolute right-0 mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                    <div className="py-1">
-                      <Link
-                        href="/dashboard"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Dashboard
-                      </Link>
-                      <Link
-                        href="/orders"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        My Orders
-                      </Link>
-                      <Link
-                        href="/profile"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Profile
-                      </Link>
-                      <Link
-                        href="/auth/signin"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <LogIn className="mr-2 h-4 w-4" />
-                        Sign in
-                      </Link>
-                      <Link
-                        href="/auth/signup"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        Sign up
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

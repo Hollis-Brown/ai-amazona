@@ -1,28 +1,35 @@
 import Image from 'next/image'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/db'
 import { LatestProducts } from '@/components/home/latest-products'
 import { AboutSection } from '@/components/home/about-section'
 import { BackToTop } from '@/components/ui/back-to-top'
 import '@/styles/animations.css'
+import type { Product } from '@/types'
 
 async function getLatestProducts() {
-  return await prisma.product.findMany({
-    where: {
-      name: {
-        in: [
-          'Shadows of the Past: Unpacking US History',
-          'The Obscured Path Shaping the United States from 1900–1950'
-        ]
-      }
-    },
-    include: {
-      category: true,
-    },
-  })
+  try {
+    console.log('Fetching latest products...')
+    const products = await db.product.findMany({
+      take: 8, // Limit to 8 latest products
+      orderBy: {
+        createdAt: 'desc'
+      },
+      include: {
+        category: true,
+      },
+    })
+    console.log('Successfully fetched products:', products.length)
+    return products
+  } catch (error) {
+    console.error('Error fetching latest products:', error)
+    return []
+  }
 }
 
 export default async function HomePage() {
+  console.log('Rendering HomePage component')
   const latestProducts = await getLatestProducts()
+  console.log('Latest products count:', latestProducts.length)
 
   return (
     <div className='space-y-8 mt-6'>
@@ -48,7 +55,7 @@ export default async function HomePage() {
 
       <AboutSection />
 
-      <LatestProducts products={latestProducts} />
+      {latestProducts.length > 0 && <LatestProducts products={latestProducts} />}
       
       <BackToTop />
     </div>

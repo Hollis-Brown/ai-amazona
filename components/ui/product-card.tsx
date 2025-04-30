@@ -9,18 +9,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardDescription } from '@/co
 import { ShoppingCart } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
+import type { Product } from '@/types'
 
 interface ProductCardProps {
-  product: {
-    id: string
-    name: string
-    description: string
-    price: number
-    images: string[]
-    courseDates?: string
-    courseTime?: string
-    courseLength?: string
-  }
+  product: Product
   showFullDescription?: boolean
 }
 
@@ -28,6 +20,10 @@ export function ProductCard({ product, showFullDescription = false }: ProductCar
   const { toast } = useToast()
   const router = useRouter()
   const addItem = useCartStore((state) => state.addItem)
+
+  if (!product) {
+    return null
+  }
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault() // Prevent navigation when clicking the button
