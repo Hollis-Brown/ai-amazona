@@ -38,7 +38,7 @@ export default async function HomePage() {
           <div className='relative aspect-[21/9] w-full overflow-hidden rounded-lg'>
             <Image
               src='/images/banner.png'
-              alt='AI Amazona Banner'
+              alt='History Beyond Headlines Banner'
               fill
               className='object-cover'
               priority
