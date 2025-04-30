@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const {
   handlers: { GET, POST },
@@ -8,15 +8,23 @@ export const {
   signOut,
 } = NextAuth({
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code"
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        // This is a temporary solution for development
+        // In production, you should validate against your database
+        if (credentials?.email === "test@example.com" && credentials?.password === "password") {
+          return {
+            id: "1",
+            name: "Test User",
+            email: "test@example.com",
+          };
         }
+        return null;
       }
     }),
   ],
@@ -24,5 +32,9 @@ export const {
     signIn: "/auth/signin",
     error: "/auth/error",
   },
+  session: {
+    strategy: "jwt",
+  },
+  secret: process.env.AUTH_SECRET || "your-auth-secret-key-min-32-chars-long",
   debug: process.env.NODE_ENV === 'development',
 }); 
