@@ -30,22 +30,33 @@ export function ProductRelated({
           `/api/products/related?categoryId=${categoryId}&currentProductId=${currentProductId}`
         )
         const data = await response.json()
-        setProducts(data)
+        // Ensure data is an array
+        setProducts(Array.isArray(data) ? data : [])
       } catch (error) {
         console.error('Error fetching related products:', error)
+        setProducts([])
       } finally {
         setLoading(false)
       }
     }
 
-    fetchRelatedProducts()
+    if (categoryId && currentProductId) {
+      fetchRelatedProducts()
+    }
   }, [categoryId, currentProductId])
 
   if (loading) {
-    return <div>Loading related products...</div>
+    return (
+      <div className='space-y-4'>
+        <h2 className='text-2xl font-bold'>Related Products</h2>
+        <div className='flex items-center justify-center py-8'>
+          <div className='text-muted-foreground'>Loading related products...</div>
+        </div>
+      </div>
+    )
   }
 
-  if (products.length === 0) {
+  if (!products || products.length === 0) {
     return null
   }
 
