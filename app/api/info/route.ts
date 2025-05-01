@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
 import * as z from 'zod'
 
 const infoSchema = z.object({
@@ -11,32 +10,20 @@ const infoSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    console.log('Request body:', body)
     
     // Validate the request body
     const { firstName, lastName, email } = infoSchema.parse(body)
+    console.log('Validated data:', { firstName, lastName, email })
 
-    // Check if email already exists
-    const existingUser = await db.user.findUnique({
-      where: { email },
+    // Return success response with the validated data
+    return NextResponse.json({ 
+      success: true, 
+      data: { firstName, lastName, email } 
     })
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'Email already exists' },
-        { status: 400 }
-      )
-    }
-
-    // Create new user with the provided information
-    const user = await db.user.create({
-      data: {
-        name: `${firstName} ${lastName}`,
-        email,
-      },
-    })
-
-    return NextResponse.json({ success: true, user })
   } catch (error) {
+    console.error('Detailed error:', error)
+    
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors },
@@ -44,7 +31,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Error saving user information:', error)
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      )
+    }
+
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 }

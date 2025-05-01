@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { CartItem } from '@/lib/store/cart'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('STRIPE_SECRET_KEY is not defined')
+}
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2025-02-24.acacia',
 })
 
@@ -11,47 +14,39 @@ interface CustomerDetails {
   name: string
 }
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const body = await req.json()
-    const { items, email, name }: { items: CartItem[]; email: string; name: string } = body
+    const body = await request.json()
+    const { amount, metadata } = body
 
-    if (!items?.length) {
+    if (!amount) {
       return NextResponse.json(
-        { error: 'No items provided' },
+        { error: 'Amount is required' },
         { status: 400 }
       )
     }
 
-    // Calculate total amount
-    const amount = items.reduce(
-      (total: number, item: CartItem) => total + item.product.price * item.quantity,
-      0
-    )
-
-    const customerDetails: CustomerDetails = { email, name }
-
-    // Create payment intent
+    // Create a PaymentIntent with the order amount and currency
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents
+      amount: Math.round(amount), // Ensure amount is an integer
       currency: 'usd',
-      payment_method_types: ['card'],
-      metadata: {
-        orderId: '',
-        items: JSON.stringify(
-          items.map((item) => ({
-            id: item.id,
-            name: item.product.name,
-            quantity: item.quantity,
-            price: item.product.price,
-          }))
-        ),
+      automatic_payment_methods: {
+        enabled: true,
       },
+      metadata: metadata || {},
     })
 
-    return NextResponse.json({ clientSecret: paymentIntent.client_secret })
+    return NextResponse.json({
+      clientSecret: paymentIntent.client_secret,
+    })
   } catch (error) {
-    console.error('Payment intent error:', error)
+    console.error('Error creating payment intent:', error)
+    if (error instanceof Stripe.errors.StripeError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.statusCode || 500 }
+      )
+    }
     return NextResponse.json(
       { error: 'Error creating payment intent' },
       { status: 500 }

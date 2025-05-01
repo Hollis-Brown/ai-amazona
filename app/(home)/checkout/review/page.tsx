@@ -1,22 +1,48 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store/cart-store'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatPrice } from '@/lib/utils'
+import { Loader2 } from 'lucide-react'
 
 export default function ReviewPage() {
   const router = useRouter()
-  const { items, total } = useCartStore()
+  const { items, total, clearCart } = useCartStore()
+  const [isLoading, setIsLoading] = useState(false)
 
   const handlePlaceOrder = async () => {
+    setIsLoading(true)
     try {
-      // TODO: Create order in database
-      // TODO: Process payment with Stripe
+      // Create order in database
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items: items.map(item => ({
+            productId: item.id,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          total,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create order')
+      }
+
+      // Clear cart and redirect to confirmation
+      clearCart()
       router.push('/checkout/confirmation')
     } catch (error) {
       console.error('Error placing order:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -39,12 +65,12 @@ export default function ReviewPage() {
                   <div>
                     <h3 className="font-medium">{item.name}</h3>
                     <p className="text-sm text-gray-500">
-                      Quantity: {item.quantity}
+                      Access: Lifetime
                     </p>
                   </div>
                 </div>
                 <p className="font-medium">
-                  {formatPrice(item.price * item.quantity)}
+                  {formatPrice(item.price)}
                 </p>
               </div>
             ))}
@@ -64,8 +90,8 @@ export default function ReviewPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <p className="text-sm text-gray-500">Visa ending in 4242</p>
-            <p className="text-sm text-gray-500">Expires 12/24</p>
+            <p className="text-sm text-gray-500">Credit Card</p>
+            <p className="text-sm text-gray-500">Payment will be processed securely through Stripe</p>
           </div>
         </CardContent>
       </Card>
@@ -74,10 +100,20 @@ export default function ReviewPage() {
         <Button
           variant="outline"
           onClick={() => router.push('/checkout/payment')}
+          disabled={isLoading}
         >
           Back
         </Button>
-        <Button onClick={handlePlaceOrder}>Place Order</Button>
+        <Button onClick={handlePlaceOrder} disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            'Complete Purchase'
+          )}
+        </Button>
       </div>
     </div>
   )

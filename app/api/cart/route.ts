@@ -1,34 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { db } from '@/lib/db'
-import { CartItem } from '@/lib/store/cart'
+import { Cart, CartItem, Product } from '@prisma/client'
 
-// Types based on Prisma schema
-type PrismaCartItem = {
-  id: string
-  cartId: string
-  productId: string
-  quantity: number
-  product: any
-}
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
-type PrismaCart = {
-  id: string
-  userId: string
-  items: PrismaCartItem[]
+type CartWithItems = Cart & {
+  items: (CartItem & {
+    product: Product
+  })[]
 }
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth()
 
-    if (!session?.user?.id) {
-      return NextResponse.json({ items: [] })
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user's saved cart from database
-    const userCart = await db.cart.findUnique({
-      where: { userId: session.user.id },
+    let cart = await db.cart.findFirst({
+      where: {
+        userId: session.user.id,
+      },
       include: {
         items: {
           include: {
@@ -38,22 +33,37 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    if (!userCart) {
-      return NextResponse.json({ items: [] })
+    if (!cart) {
+      const newCart = await db.cart.create({
+        data: {
+          userId: session.user.id,
+          items: {
+            create: [],
+          },
+        },
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      })
+      cart = newCart
     }
 
-    // Transform database cart items to match frontend cart item structure
-    const items = userCart.items.map((item: PrismaCartItem) => ({
-      id: item.id,
-      product: item.product,
-      quantity: item.quantity,
-    }))
+    if (!cart) {
+      return NextResponse.json(
+        { error: 'Failed to create cart' },
+        { status: 500 }
+      )
+    }
 
-    return NextResponse.json({ items })
+    return NextResponse.json(cart)
   } catch (error) {
     console.error('Error fetching cart:', error)
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Error fetching cart' },
       { status: 500 }
     )
   }
@@ -71,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { items } = body as { items: CartItem[] }
+    const { items } = body as { items: Array<{ productId: string; quantity: number }> }
 
     // Validate items
     if (!Array.isArray(items)) {
@@ -91,8 +101,21 @@ export async function POST(request: NextRequest) {
       cart = await db.cart.create({
         data: {
           userId: session.user.id,
+          items: {
+            create: [],
+          },
+        },
+        include: {
+          items: true,
         },
       })
+    }
+
+    if (!cart) {
+      return NextResponse.json(
+        { error: 'Failed to create cart' },
+        { status: 500 }
+      )
     }
 
     // Delete existing items
@@ -104,7 +127,7 @@ export async function POST(request: NextRequest) {
     await db.cartItem.createMany({
       data: items.map((item) => ({
         cartId: cart!.id,
-        productId: item.product.id,
+        productId: item.productId,
         quantity: item.quantity,
       })),
     })

@@ -4,6 +4,9 @@ import { OrderStats } from '@/components/admin/order-stats'
 import { RecentOrders } from '@/components/admin/recent-orders'
 import { getRevenueData, getOrderStats, getRecentOrders } from '@/lib/analytics'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminDashboardPage() {
   const [revenueData, orderStats, recentOrders] = await Promise.all([
     getRevenueData(),

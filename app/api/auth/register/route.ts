@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import bcrypt from "bcryptjs"
+import { hash } from "bcryptjs"
+import { z } from "zod"
+
+const registerSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+})
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json()
-
-    if (!name || !email || !password) {
-      return NextResponse.json(
-        { message: "Missing required fields" },
-        { status: 400 }
-      )
-    }
+    const body = await req.json()
+    const { name, email, password } = registerSchema.parse(body)
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -19,14 +20,14 @@ export async function POST(req: Request) {
     })
 
     if (existingUser) {
-      return NextResponse.json(
-        { message: "User already exists" },
+      return new NextResponse(
+        JSON.stringify({ message: 'User already exists' }),
         { status: 400 }
       )
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10)
+    const hashedPassword = await hash(password, 12)
 
     // Create user
     const user = await prisma.user.create({
@@ -34,21 +35,24 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
-        role: "USER",
+        role: 'USER',
       },
     })
 
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user
 
-    return NextResponse.json(
-      { message: "User created successfully", user: userWithoutPassword },
-      { status: 201 }
-    )
+    return NextResponse.json(userWithoutPassword)
   } catch (error) {
-    console.error("Registration error:", error)
-    return NextResponse.json(
-      { message: "Error creating user" },
+    console.error('Registration error:', error)
+    if (error instanceof z.ZodError) {
+      return new NextResponse(
+        JSON.stringify({ message: error.errors[0].message }),
+        { status: 400 }
+      )
+    }
+    return new NextResponse(
+      JSON.stringify({ message: 'Internal server error' }),
       { status: 500 }
     )
   }

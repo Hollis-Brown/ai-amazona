@@ -3,14 +3,22 @@
 import { Button } from '@/components/ui/button'
 import { useCartStore } from '@/lib/store/cart'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export function CartSummary() {
   const router = useRouter()
   const { getTotalPrice, items } = useCartStore()
+  const [isLoading, setIsLoading] = useState(false)
   const total = getTotalPrice()
 
-  const handleProceedToCheckout = () => {
-    router.push('/info')
+  const handleProceedToCheckout = async () => {
+    setIsLoading(true)
+    try {
+      // Proceed directly to info page
+      router.push('/info')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (items.length === 0) {
@@ -36,8 +44,9 @@ export function CartSummary() {
       <Button
         className="w-full"
         onClick={handleProceedToCheckout}
+        disabled={isLoading}
       >
-        Proceed to Checkout
+        {isLoading ? 'Loading...' : 'Proceed to Checkout'}
       </Button>
     </div>
   )

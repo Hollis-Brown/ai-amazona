@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/auth'
+import { getToken } from 'next-auth/jwt'
 import { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  const session = await auth()
-  const pathname = request.nextUrl.pathname
+  const token = await getToken({ req: request })
+  const { pathname } = request.nextUrl
 
-  // Only protect checkout steps (not the cart)
-  if (pathname.startsWith('/checkout/') && !pathname.includes('/checkout/cart')) {
-    if (!session) {
+  // Protect payment page
+  if (pathname.startsWith('/checkout/payment')) {
+    if (!token) {
       const url = new URL('/auth/signin', request.url)
-      url.searchParams.set('callbackUrl', pathname)
+      url.searchParams.set('callbackUrl', '/checkout/payment')
       return NextResponse.redirect(url)
     }
   }
@@ -19,5 +19,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/checkout/:path*'],
+  matcher: ['/checkout/payment/:path*']
 } 

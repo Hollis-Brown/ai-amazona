@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
+import { createPaymentIntent, confirmPayment } from '@/lib/stripe'
 import { auth } from '@/auth'
-import { stripe } from '@/lib/stripe'
+import { db } from '@/lib/db'
 
 // Check if Stripe API key is available
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -10,34 +11,44 @@ if (!process.env.STRIPE_SECRET_KEY) {
 export async function POST(req: Request) {
   try {
     const session = await auth()
-
     if (!session?.user) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
     const body = await req.json()
-    const { amount, items } = body
+    const { amount, paymentIntentId } = body
 
-    if (!amount || !items?.length) {
-      return new NextResponse('Missing required fields', { status: 400 })
+    if (!amount || amount <= 0) {
+      return new NextResponse('Invalid amount', { status: 400 })
     }
 
-    // Create a payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents
-      currency: 'usd',
-      metadata: {
-        userId: session.user.id,
-        items: JSON.stringify(items.map((item: any) => ({
-          id: item.id,
-          quantity: item.quantity
-        })))
+    if (paymentIntentId) {
+      // Confirm existing payment intent
+      const paymentIntent = await confirmPayment(paymentIntentId)
+      return NextResponse.json({ paymentIntent })
+    } else {
+      // Create new payment intent
+      const paymentIntent = await createPaymentIntent(amount)
+      
+      if (!paymentIntent?.client_secret) {
+        throw new Error('Failed to create payment intent')
       }
-    })
 
-    return NextResponse.json({ clientSecret: paymentIntent.client_secret })
+      return NextResponse.json({ 
+        paymentIntent: {
+          id: paymentIntent.id,
+          client_secret: paymentIntent.client_secret,
+          amount: paymentIntent.amount,
+          currency: paymentIntent.currency,
+          status: paymentIntent.status
+        }
+      })
+    }
   } catch (error) {
-    console.error('[PAYMENT_ERROR]', error)
-    return new NextResponse('Internal Error', { status: 500 })
+    console.error('Payment error:', error)
+    return new NextResponse(
+      error instanceof Error ? error.message : 'Internal error', 
+      { status: 500 }
+    )
   }
 }
