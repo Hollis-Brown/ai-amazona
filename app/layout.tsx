@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { SessionProvider } from '@/components/providers/session-provider'
 import { CartProvider } from '@/components/providers/cart-provider'
 import { cn } from '@/lib/utils'
+import { Toaster as SonnerToaster } from 'sonner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -34,6 +35,7 @@ export default function RootLayout({
           <CartProvider>
             {children}
             <Toaster />
+            <SonnerToaster />
           </CartProvider>
         </SessionProvider>
       </body>

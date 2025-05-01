@@ -35,3 +35,63 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+### 3. Core Features - Customer Side [ ]
+- [X] Home Layout:
+  - Create `(home)` folder in `app` directory
+  - Header with logo, search bar, and navigation
+  - Footer with links and social media
+- [X] Homepage:
+  - banner
+  - latest products
+- [X] Products Catalog:
+  - Product listing page
+  - Category filtering
+  - Search functionality
+- [X] Product pages:
+  - [X] Product details page
+  - [X] Image gallery
+  - [X] Add to cart functionality
+  - [X] Related products
+  - [X] Reviews section
+- [X] Shopping cart:
+  - [X] Cart State Management:
+    - Set up Zustand store for cart
+    - Implement add/remove/update quantity actions
+    - Persist cart data in localStorage
+  - [X] Cart Components:
+    - Create CartItem component
+    - Create CartSummary component
+    - Implement quantity controls
+    - Add remove item functionality
+  - [X] Cart Page Layout:
+    - Create responsive grid layout
+    - Show product images and details
+    - Display subtotal and total
+    - Add checkout button
+  - [X] Cart API:
+    - Create cart API endpoints
+    - Implement price calculations
+    - Handle stock validation
+    - Sync with user's saved cart (if logged in)
+- [ ] Checkout process:
+  - [X] Checkout Flow:
+    - Payment method integration (Stripe)
+    - Order summary review
+  - [X] Payment Integration:
+    - Set up Stripe Elements
+    - Implement payment processing
+    - Handle success/failure scenarios
+  - [X] Order Creation:
+    - Create order in database
+    - Send confirmation email
+    - Update inventory
+- [ ] User dashboard:
+  - [ ] Profile Management:
+    - Edit personal information
+    - Change password
+    - Profile picture upload
+  - [ ] Order History:
+    - List all orders
+    - Order details view
+    - Order status tracking
+

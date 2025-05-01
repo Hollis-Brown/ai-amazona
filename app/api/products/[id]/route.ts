@@ -25,7 +25,13 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(product)
+    // Ensure images array exists
+    const productWithImages = {
+      ...product,
+      images: product.images || [],
+    }
+
+    return NextResponse.json(productWithImages)
   } catch (error) {
     console.error('Error fetching product:', error)
     return NextResponse.json(

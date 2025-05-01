@@ -98,12 +98,7 @@ export default function ProductPage() {
   if (!product) {
     return (
       <div className='container mx-auto px-4 py-8'>
-        <div className='text-center'>
-          <h1 className='text-2xl font-bold'>Product not found</h1>
-          <p className='mt-2 text-muted-foreground'>
-            The product you are looking for does not exist.
-          </p>
-        </div>
+        <h1 className='text-2xl font-bold'>Product not found</h1>
       </div>
     )
   }
@@ -111,33 +106,38 @@ export default function ProductPage() {
   return (
     <div className='container mx-auto px-4 py-8'>
       <div className='grid grid-cols-1 gap-8 md:grid-cols-2'>
+        {/* Left column - Product Image */}
         <div className='space-y-4'>
-          <div className='aspect-square overflow-hidden rounded-lg'>
-            <Image
-              src={product.images[selectedImage] || '/placeholder.png'}
-              alt={product.name}
-              width={600}
-              height={600}
-              className='h-full w-full object-cover'
-            />
+          <div className='aspect-square overflow-hidden rounded-lg border'>
+            {product.images && product.images.length > 0 ? (
+              <Image
+                src={product.images[selectedImage]}
+                alt={product.name}
+                width={500}
+                height={500}
+                className='h-full w-full object-cover'
+              />
+            ) : (
+              <div className='flex h-full w-full items-center justify-center bg-muted'>
+                <span className='text-sm text-muted-foreground'>No image available</span>
+              </div>
+            )}
           </div>
-          {product.images.length > 1 && (
+          {product.images && product.images.length > 1 && (
             <div className='grid grid-cols-4 gap-2'>
               {product.images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
                   className={`aspect-square overflow-hidden rounded-lg ${
-                    selectedImage === index
-                      ? 'ring-2 ring-primary'
-                      : 'ring-1 ring-gray-200'
+                    selectedImage === index ? 'ring-2 ring-primary' : ''
                   }`}
                 >
                   <Image
                     src={image}
                     alt={`${product.name} - Image ${index + 1}`}
-                    width={150}
-                    height={150}
+                    width={100}
+                    height={100}
                     className='h-full w-full object-cover'
                   />
                 </button>
@@ -145,63 +145,76 @@ export default function ProductPage() {
             </div>
           )}
         </div>
-        <div className='flex flex-col space-y-4'>
-          <h1 className='text-3xl font-bold'>{product.name}</h1>
-          <p className='text-2xl font-semibold text-primary'>
-            ${product.price.toFixed(2)}
-          </p>
+
+        {/* Right column - Product Details */}
+        <div className='space-y-6'>
+          <div>
+            <h1 className='text-3xl font-bold'>{product.name}</h1>
+            <p className='mt-2 text-2xl font-semibold'>
+              ${product.price.toFixed(2)}
+            </p>
+          </div>
           <p className='text-muted-foreground'>{product.description}</p>
-          
-          {(product.courseDates || product.courseTime || product.courseLength) && (
-            <div className='mt-4 space-y-2 rounded-lg border p-4'>
-              <h3 className='font-semibold'>Course Details</h3>
-              {product.courseDates && (
-                <p><span className='font-medium'>Dates:</span> {product.courseDates}</p>
-              )}
-              {product.courseTime && (
-                <p><span className='font-medium'>Time:</span> {product.courseTime}</p>
-              )}
-              {product.courseLength && (
-                <p><span className='font-medium'>Length:</span> {product.courseLength}</p>
-              )}
-            </div>
-          )}
-          
-          <div className='mt-4 space-y-4'>
-            <div className='flex items-center gap-4'>
-              <span className='font-medium'>Quantity:</span>
-              <Select
-                value={quantity.toString()}
-                onValueChange={(value) => setQuantity(parseInt(value))}
-              >
-                <SelectTrigger className='w-[100px]'>
-                  <SelectValue placeholder='Select quantity' />
-                </SelectTrigger>
-                <SelectContent>
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <SelectItem key={num} value={num.toString()}>
-                      {num}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <Button onClick={handleAddToCart} size='lg' className='w-full gap-2'>
+          <div className='flex items-center gap-4'>
+            <Select
+              value={quantity.toString()}
+              onValueChange={(value) => setQuantity(parseInt(value))}
+            >
+              <SelectTrigger className='w-24'>
+                <SelectValue placeholder='Quantity' />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: Math.min(10, product.stock || 10) }, (_, i) => (
+                  <SelectItem key={i + 1} value={(i + 1).toString()}>
+                    {i + 1}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              size='lg'
+              onClick={handleAddToCart}
+              className='flex-1 gap-2'
+              disabled={product.stock === 0}
+            >
               Add to Cart
-              <ShoppingCart className='h-4 w-4' />
+              <ShoppingCart className='h-5 w-5' />
             </Button>
           </div>
+          <Separator />
+          <Tabs defaultValue='details'>
+            <TabsList>
+              <TabsTrigger value='details'>Details</TabsTrigger>
+              <TabsTrigger value='shipping'>Shipping</TabsTrigger>
+            </TabsList>
+            <TabsContent value='details' className='space-y-4'>
+              <div>
+                <h3 className='font-semibold'>Category</h3>
+                <p className='text-muted-foreground'>{product.category?.name}</p>
+              </div>
+              <div>
+                <h3 className='font-semibold'>Course Dates</h3>
+                <p className='text-muted-foreground'>{product.courseDates}</p>
+              </div>
+              <div>
+                <h3 className='font-semibold'>Course Length</h3>
+                <p className='text-muted-foreground'>{product.courseLength}</p>
+              </div>
+              <div>
+                <h3 className='font-semibold'>Course Time</h3>
+                <p className='text-muted-foreground'>{product.courseTime}</p>
+              </div>
+            </TabsContent>
+            <TabsContent value='shipping' className='space-y-4'>
+              <p className='text-muted-foreground'>
+                Free shipping on all orders. Delivery time varies by location.
+              </p>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
-      
       <Separator className='my-8' />
-      
-      {product.categoryId && (
-        <ProductRelated
-          categoryId={product.categoryId}
-          currentProductId={product.id}
-        />
-      )}
+      <ProductRelated categoryId={product.categoryId} currentProductId={product.id} />
     </div>
   )
 }

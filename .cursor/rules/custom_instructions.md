@@ -1,0 +1,187 @@
+# Cursor Rules
+
+## Instructions
+
+- Record fixes for mistakes or corrections to avoid repetition in the `Lessons` section.
+- Organize thoughts and plan steps before starting a task in the `Scratchpad` section.
+- Clear old tasks if necessary.
+- Use todo markers for progress tracking:
+  - `[X]` Completed tasks
+  - `[ ]` Pending tasks
+- Update Scratchpad after completing subtasks.
+- Reflect and plan after milestones for better task management.
+- Always refer to Scratchpad before planning the next step.
+
+## Lessons
+
+1. Use `npx shadcn@latest add [component]` instead of `npx shadcn-ui@latest add [component]` when installing Shadcn UI components.
+2. In Next.js 14+, page props params must be typed as a Promise. Example:
+   ```typescript
+   type tParams = Promise<{ id: string }>
+   interface PageProps {
+     params: tParams
+   }
+   ```
+   Then await the params in the component:
+   ```typescript
+   export default async function Page(props: PageProps) {
+     const { id } = await props.params
+   }
+   ```
+3. Use `const session = await auth()` instead of `const session = await getServerSession(authOptions)` for Next.js authentication. The new `auth()` function is the recommended way to get the session in Next.js Auth v5.
+4. When importing `useRouter` from 'next/navigation', the component must be marked as a client component using the `'use client'` directive at the top of the file, as this hook only works on the client side.
+
+## Scratchpad
+
+### 1. Project Setup and Configuration [X]
+- [X] Initialize Next.js 15 project with TypeScript
+- [X] Set up project structure and folders
+- [X] Configure ESLint and Prettier
+- [X] Install and configure dependencies:
+  - [X] UI Components and Icons:
+    - [X] Install Shadcn UI: `npx shadcn@latest init`
+    - [X] Add required Shadcn components (button, card, form, input, etc.)
+    - [X] Install Lucide icons: `npm install lucide-react`
+  - [X] Form and Validation:
+    - [X] Install Zod: `npm install zod`
+    - [X] Install React Hook Form: `npm install react-hook-form @hookform/resolvers`
+  - [X] State Management:
+    - [X] Install Zustand: `npm install zustand`
+  - [X] Data Visualization:
+    - [X] Install Recharts: `npm install recharts`
+  - [X] Email Service:
+    - [X] Install Resend: `npm install resend`
+  - [X] File Upload:
+    - [X] Install Uploadthing: `npm install uploadthing @uploadthing/react`
+  - [X] Database and ORM:
+    - [X] Install Prisma: `npm install prisma @prisma/client`
+    - [X] Initialize Prisma: `npx prisma init`
+  - [X] Authentication:
+    - [X] Install NextAuth.js beta: `npm install next-auth@beta`
+  - [X] Payment Processing:
+    - [X] Install Stripe: `npm install stripe @stripe/stripe-js`
+
+### 2. Database and Authentication [X]
+- [X] Set up PostgreSQL database
+- [X] Configure Prisma schema:
+  - [X] User model
+  - [X] Product model
+  - [X] Category model
+  - [X] Order model
+  - [X] Review model
+  - [X] Cart model
+- [X] Sync database with schema
+- [X] Implement NextAuth.js authentication:
+  - [X] Email/Password
+  - [X] OAuth providers (Google, GitHub)
+  - [X] JWT handling
+  - [X] Protected routes
+
+### 3. Core Features - Customer Side [ ]
+- [X] Home Layout:
+  - Create `(home)` folder in `app` directory
+  - Header with logo, search bar, and navigation
+  - Footer with links and social media
+- [X] Homepage:
+  - banner
+  - latest products
+- [X] Products Catalog:
+  - Product listing page
+  - Category filtering
+  - Search functionality
+- [X] Product pages:
+  - [X] Product details page
+  - [X] Image gallery
+  - [X] Add to cart functionality
+  - [X] Related products
+  - [X] Reviews section
+- [X] Shopping cart:
+  - [X] Cart State Management:
+    - Set up Zustand store for cart
+    - Implement add/remove/update quantity actions
+    - Persist cart data in localStorage
+  - [X] Cart Components:
+    - Create CartItem component
+    - Create CartSummary component
+    - Implement quantity controls
+    - Add remove item functionality
+  - [X] Cart Page Layout:
+    - Create responsive grid layout
+    - Show product images and details
+    - Display subtotal and total
+    - Add checkout button
+  - [X] Cart API:
+    - Create cart API endpoints
+    - Implement price calculations
+    - Handle stock validation
+    - Sync with user's saved cart (if logged in)
+- [ ] Checkout process:
+  - [ ] Checkout Flow:
+    - Payment method integration (Stripe)
+    - Order summary review
+  - [ ] Payment Integration:
+    - Set up Stripe Elements
+    - Implement payment processing
+    - Handle success/failure scenarios
+  - [ ] Order Creation:
+    - Create order in database
+    - Send confirmation email
+    - Update inventory
+- [ ] User dashboard:
+  - [ ] Profile Management:
+    - Edit personal information
+    - Change password
+    - Profile picture upload
+  - [ ] Order History:
+    - List all orders
+    - Order details view
+    - Order status tracking
+
+### 4. Admin Dashboard [ ]
+- [ ] Admin authentication and authorization
+- [ ] Dashboard overview:
+  - Sales analytics
+  - Order statistics
+  - Customer insights
+  - Revenue charts
+- [ ] Product management:
+  - CRUD operations
+  - Bulk actions
+  - Image upload (Uploadthing)
+- [ ] Order management:
+  - Order processing
+  - Status updates
+  - Refund handling
+- [ ] User management:
+  - Customer list
+  - Admin privileges
+  - User actions
+
+### 5. Advanced Features [ ]
+- [ ] Real-time notifications
+- [ ] Email system (Resend):
+  - Order confirmations
+  - Password reset
+- [ ] Search optimization
+- [ ] Performance optimization:
+  - Image optimization
+  - Caching strategies
+  - API optimization
+- [ ] Analytics and reporting
+
+### 6. Testing and Deployment [ ]
+- [ ] Unit testing
+- [ ] Integration testing
+- [ ] E2E testing
+- [ ] Security audit
+- [ ] Production deployment:
+  - Environment setup
+  - CI/CD pipeline
+  - Monitoring
+  - Backup strategy
+
+### 7. Documentation [ ]
+- [ ] API documentation
+- [ ] User guide
+- [ ] Admin documentation
+- [ ] Deployment guide 
