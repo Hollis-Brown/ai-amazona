@@ -8,11 +8,11 @@ interface CheckoutStepsProps {
 }
 
 const steps = [
-  { id: 1, name: 'Cart', path: '/checkout/cart' },
-  { id: 2, name: 'Information', path: '/checkout/information' },
-  { id: 3, name: 'Payment', path: '/checkout/payment' },
-  { id: 4, name: 'Review', path: '/checkout/review' },
-  { id: 5, name: 'Confirmation', path: '/checkout/confirmation' },
+  { id: 0, name: 'Cart', path: '/cart' },
+  { id: 1, name: 'Info', path: '/info' },
+  { id: 2, name: 'Payment', path: '/payment' },
+  { id: 3, name: 'Review', path: '/review' },
+  { id: 4, name: 'Confirmation', path: '/confirmation' },
 ]
 
 export function CheckoutSteps({ currentStep }: CheckoutStepsProps) {
@@ -31,7 +31,7 @@ export function CheckoutSteps({ currentStep }: CheckoutStepsProps) {
               className={cn(
                 'flex h-8 w-8 items-center justify-center rounded-full',
                 currentStep >= step.id
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'bg-black text-white'
                   : 'bg-muted text-muted-foreground'
               )}
             >
@@ -45,7 +45,7 @@ export function CheckoutSteps({ currentStep }: CheckoutStepsProps) {
               <div
                 className={cn(
                   'h-0.5 flex-1',
-                  currentStep > step.id ? 'bg-primary' : 'bg-muted'
+                  currentStep > step.id ? 'bg-black' : 'bg-muted'
                 )}
               />
             )}
@@ -53,7 +53,7 @@ export function CheckoutSteps({ currentStep }: CheckoutStepsProps) {
           <span
             className={cn(
               'mt-2 text-sm font-medium',
-              currentStep >= step.id ? 'text-primary' : 'text-muted-foreground'
+              currentStep >= step.id ? 'text-black font-bold' : 'text-muted-foreground'
             )}
           >
             {step.name}

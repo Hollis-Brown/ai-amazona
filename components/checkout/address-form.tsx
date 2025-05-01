@@ -15,27 +15,27 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-const checkoutSchema = z.object({
+const infoSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
 })
 
-type CheckoutFormValues = z.infer<typeof checkoutSchema>
+type InfoFormValues = z.infer<typeof infoSchema>
 
 export function AddressForm() {
   const router = useRouter()
-  const form = useForm<CheckoutFormValues>({
-    resolver: zodResolver(checkoutSchema),
+  const form = useForm<InfoFormValues>({
+    resolver: zodResolver(infoSchema),
     defaultValues: {
       fullName: "",
       email: "",
     },
   })
 
-  async function onSubmit(data: CheckoutFormValues) {
+  async function onSubmit(data: InfoFormValues) {
     try {
-      // Save contact info
-      const response = await fetch("/api/checkout/contact", {
+      // Save user information
+      const response = await fetch("/api/checkout/info", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,13 +44,13 @@ export function AddressForm() {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to save contact information")
+        throw new Error("Failed to save information")
       }
 
       // Proceed to payment
       router.push("/checkout/payment")
     } catch (error) {
-      console.error("Error saving contact info:", error)
+      console.error("Error saving information:", error)
     }
   }
 

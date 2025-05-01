@@ -9,6 +9,6 @@ export default async function CheckoutPage() {
     redirect('/info')
   }
 
-  // If user is authenticated, redirect to payment page
-  redirect('/checkout/payment')
+  // If user is authenticated, redirect to address page
+  redirect('/checkout/address')
 } 

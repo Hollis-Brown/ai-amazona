@@ -1,57 +1,93 @@
 'use client'
 
-import { useRouter } from "next/navigation"
-import { signIn } from "@/auth"
-import { Button } from "@/components/ui/button"
+import { Suspense, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import { signIn } from 'next-auth/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { useState, useEffect } from "react"
-import Link from "next/link"
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
 
-export default function SignInPage({
-  searchParams,
-}: {
-  searchParams: { callbackUrl?: string; error?: string }
-}) {
+const signInSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
+})
+
+type SignInFormValues = z.infer<typeof signInSchema>
+
+function SignInForm() {
   const router = useRouter()
-  const [callbackUrl, setCallbackUrl] = useState("/")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
+  const searchParams = useSearchParams()
+  const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [searchParamsError, setSearchParamsError] = useState("")
+  const callbackUrl = searchParams?.get('callbackUrl') || '/'
+  const registered = searchParams?.get('registered') === 'true'
 
-  // Use useEffect to safely access searchParams
-  useEffect(() => {
-    if (searchParams?.callbackUrl) {
-      setCallbackUrl(searchParams.callbackUrl)
+  const form = useForm<SignInFormValues>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  const onSubmit = async (data: SignInFormValues) => {
+    try {
+      setIsLoading(true)
+      setError('')
+
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+        callbackUrl,
+      })
+
+      if (result?.error) {
+        throw new Error(result.error)
+      }
+
+      router.push(callbackUrl)
+    } catch (error) {
+      console.error('Sign in error:', error)
+      setError(error instanceof Error ? error.message : 'Failed to sign in')
+    } finally {
+      setIsLoading(false)
     }
-    if (searchParams?.error) {
-      setSearchParamsError(searchParams.error)
-    }
-  }, [searchParams])
+  }
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true)
-    setError("")
-    
     try {
-      console.log("Starting Google sign-in process...")
-      await signIn("google", {
+      setIsLoading(true)
+      setError('')
+
+      const result = await signIn('google', {
         callbackUrl,
-        redirect: true,
+        redirect: false,
       })
+
+      if (result?.error) {
+        throw new Error(result.error)
+      }
+
+      router.push(callbackUrl)
     } catch (error) {
-      console.error("Google sign-in error:", error)
-      setError("An error occurred during Google sign in")
+      console.error('Google sign in error:', error)
+      setError(error instanceof Error ? error.message : 'Failed to sign in with Google')
+    } finally {
       setIsLoading(false)
     }
   }
@@ -59,25 +95,68 @@ export default function SignInPage({
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md mx-4">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Sign in</CardTitle>
-          <CardDescription className="text-center">
-            Sign in to your account
+        <CardHeader>
+          <CardTitle>Sign In</CardTitle>
+          <CardDescription>
+            {registered
+              ? 'Account created successfully! Please sign in.'
+              : 'Enter your credentials to sign in'}
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4">
-          {(searchParamsError || error) && (
-            <Alert variant="destructive">
+        <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                {searchParamsError || error}
-              </AlertDescription>
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          <Button 
-            variant="outline" 
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="john@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Signing in...' : 'Sign In'}
+              </Button>
+            </form>
+          </Form>
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            className="w-full"
             onClick={handleGoogleSignIn}
-            className="flex items-center justify-center"
             disabled={isLoading}
           >
             <svg
@@ -93,12 +172,26 @@ export default function SignInPage({
               <path
                 fill="currentColor"
                 d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
-              ></path>
+              />
             </svg>
-            {isLoading ? "Signing in..." : "Continue with Google"}
+            {isLoading ? 'Signing in...' : 'Continue with Google'}
           </Button>
+          <div className="mt-4 text-center text-sm">
+            Don't have an account?{' '}
+            <Link href="/auth/signup" className="text-primary hover:underline">
+              Sign up
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInForm />
+    </Suspense>
   )
 } 

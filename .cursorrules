@@ -95,22 +95,22 @@
   - [X] Add to cart functionality
   - [X] Related products
   - [X] Reviews section
-- [ ] Shopping cart:
-  - [ ] Cart State Management:
+- [X] Shopping cart:
+  - [X] Cart State Management:
     - Set up Zustand store for cart
     - Implement add/remove/update quantity actions
     - Persist cart data in localStorage
-  - [ ] Cart Components:
+  - [X] Cart Components:
     - Create CartItem component
     - Create CartSummary component
     - Implement quantity controls
     - Add remove item functionality
-  - [ ] Cart Page Layout:
+  - [X] Cart Page Layout:
     - Create responsive grid layout
     - Show product images and details
     - Display subtotal and total
     - Add checkout button
-  - [ ] Cart API:
+  - [X] Cart API:
     - Create cart API endpoints
     - Implement price calculations
     - Handle stock validation
