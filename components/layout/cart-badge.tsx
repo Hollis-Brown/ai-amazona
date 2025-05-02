@@ -14,11 +14,18 @@ export function CartBadge() {
   const itemCount = cart.items.reduce((total, item) => total + item.quantity, 0)
   const hasClearedCart = useRef(false)
 
-  // Clear cart when order is confirmed
+  // Clear cart when order is confirmed and reset when leaving confirmation page
   useEffect(() => {
-    if (pathname === '/checkout/confirmation' && searchParams.get('order_id') && !hasClearedCart.current) {
+    const isConfirmationPage = pathname === '/checkout/confirmation'
+    const hasOrderId = searchParams.get('order_id')
+
+    if (isConfirmationPage && hasOrderId && !hasClearedCart.current) {
+      // Clear cart when order is confirmed
       hasClearedCart.current = true
       cart.clearCart()
+    } else if (!isConfirmationPage) {
+      // Reset the flag when leaving confirmation page
+      hasClearedCart.current = false
     }
   }, [pathname, searchParams, cart])
 
