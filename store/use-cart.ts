@@ -62,17 +62,22 @@ export const useCart = create<CartStore>()(
         }))
       },
       clearCart: () => set({ items: [] }),
-      get total() {
-        return get().items.reduce(
-          (total, item) => total + item.price * item.quantity,
-          0
-        )
-      },
+      total: 0,
     }),
     {
       name: 'shopping-cart',
       storage: createJSONStorage(() => localStorage),
-      skipHydration: true,
+      partialize: (state) => ({
+        items: state.items,
+        total: state.items.reduce(
+          (total, item) => total + item.price * item.quantity,
+          0
+        ),
+      }),
     }
   )
 )
+
+// Add a selector for the total
+export const selectTotal = (state: CartStore) =>
+  state.items.reduce((total, item) => total + item.price * item.quantity, 0)
