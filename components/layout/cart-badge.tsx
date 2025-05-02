@@ -4,10 +4,23 @@ import Link from 'next/link'
 import { ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/store/use-cart'
+import { useEffect, useRef } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
 
 export function CartBadge() {
   const cart = useCart()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const itemCount = cart.items.reduce((total, item) => total + item.quantity, 0)
+  const hasClearedCart = useRef(false)
+
+  // Clear cart when order is confirmed
+  useEffect(() => {
+    if (pathname === '/checkout/confirmation' && searchParams.get('order_id') && !hasClearedCart.current) {
+      hasClearedCart.current = true
+      cart.clearCart()
+    }
+  }, [pathname, searchParams, cart])
 
   return (
     <Button variant='ghost' size='icon' asChild className='relative'>

@@ -95,18 +95,27 @@
   - Image gallery
   - Reviews and ratings
   - Add to cart functionality
-- [ ] Shopping cart:
+- [X] Shopping cart:
   - Cart management
   - Quantity updates
   - Price calculations
 - [ ] Checkout process:
-  - Payment integration (Stripe)
-  - Order confirmation
+  - [X] Information page:
+    - [X] Contact information
+    - [X] Order summary
+  - [ ] Payment page:
+    - [ ] Stripe integration
+    - [ ] Payment form
+    - [ ] Security measures
+  - [ ] Order review page
+  - [ ] Order confirmation page:
+    - [ ] Order details
+    - [ ] Confirmation message
+    - [ ] Next steps
 - [ ] User dashboard:
   - Order history
   - Profile management
   - Saved addresses
-  - Wishlist
 
 ### 4. Admin Dashboard [ ]
 - [ ] Admin authentication and authorization

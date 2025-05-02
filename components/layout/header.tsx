@@ -3,18 +3,10 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { User, LogOut, Menu } from 'lucide-react'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { Menu } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { CartBadge } from '@/components/layout/cart-badge'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 
 export function Header() {
@@ -78,59 +70,6 @@ export function Header() {
           {/* Right Section */}
           <div className='flex items-center gap-4'>
             <CartBadge />
-            {session ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant='ghost' className='flex items-center gap-2'>
-                    <User className='h-5 w-5' />
-                    <span className='hidden sm:inline-block'>
-                      {session.user.name}
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end' className='w-60'>
-                  <DropdownMenuLabel className='font-normal'>
-                    <div className='flex flex-col space-y-1'>
-                      <p className='text-sm font-medium leading-none'>
-                        {session.user.name}
-                      </p>
-                      <p className='text-xs leading-none text-muted-foreground'>
-                        {session.user.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href='/dashboard/profile'>Profile</Link>
-                  </DropdownMenuItem>
-                  {session.user.role === 'ADMIN' && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link href='/admin'>Admin Dashboard</Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => signOut({ callbackUrl: '/' })}
-                    className='text-red-600'
-                  >
-                    <LogOut className='mr-2 h-4 w-4' />
-                    Sign out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Button 
-                variant='default' 
-                onClick={() => signIn()}
-                className='bg-blue-600 hover:bg-blue-700 text-white'
-              >
-                Sign In
-              </Button>
-            )}
-
             {/* Mobile menu button */}
             <Button variant='ghost' size='icon' className='md:hidden'>
               <Menu className='h-6 w-6' />
