@@ -1,7 +1,5 @@
 'use client'
 
-import { Elements } from '@stripe/react-stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
 import { PaymentForm } from '@/components/checkout/payment-form'
 import { useCart } from '@/store/use-cart'
 import { selectTotal } from '@/store/use-cart'
@@ -12,14 +10,9 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 
-// Initialize Stripe
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
-
 export default function PaymentPage() {
-  const cart = useCart()
   const total = useCart(selectTotal)
   const router = useRouter()
-  const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -55,8 +48,6 @@ export default function PaymentPage() {
         if (!data.clientSecret) {
           throw new Error('No client secret received')
         }
-
-        setClientSecret(data.clientSecret)
       } catch (err) {
         console.error('Error fetching client secret:', err)
         setError(err instanceof Error ? err.message : 'Failed to load payment form. Please try again.')

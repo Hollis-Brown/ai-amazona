@@ -186,8 +186,8 @@ export function PaymentForm({ orderId }: PaymentFormProps) {
           disabled={isProcessing}
         >
           {isProcessing ? 'Processing...' : 'Pay Now'}
-        </Button>
-      </form>
+      </Button>
+    </form>
     </div>
   )
 }

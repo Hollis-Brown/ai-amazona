@@ -9,8 +9,8 @@ import { cn } from '@/lib/utils'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AI Amazona',
-  description: 'Your one-stop shop for AI courses',
+  title: 'History Beyond Headlines',
+  description: 'Your one-stop shop for History courses',
   icons: {
     icon: [
       {
