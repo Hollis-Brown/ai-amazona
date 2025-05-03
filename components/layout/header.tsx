@@ -1,80 +1,75 @@
 'use client'
 
-import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import Image from 'next/image'
-import { Menu } from 'lucide-react'
-import { useSession } from 'next-auth/react'
+import { CartBadge } from './cart-badge'
 import { Button } from '@/components/ui/button'
-import { CartBadge } from '@/components/layout/cart-badge'
-import { cn } from '@/lib/utils'
+import { signIn, signOut } from 'next-auth/react'
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { ShoppingCart, User } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 export function Header() {
-  const { data: session } = useSession()
-  const [activePath, setActivePath] = useState('/')
-
-  // Set active path based on current route
-  useEffect(() => {
-    const path = window.location.pathname
-    setActivePath(path)
-  }, [])
-
-  const navItems = [
-    { href: '/', label: 'Home' },
-    { href: '/contact', label: 'Contact' },
-    { href: '/products', label: 'Products Catalog' },
-  ]
+  const pathname = usePathname()
 
   return (
-    <header className='bg-white shadow-sm'>
-      <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='flex h-20 items-center justify-between'>
-          {/* Logo */}
-          <div className='flex-shrink-0'>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center">
+        <div className="mr-4 hidden md:flex">
+          <Link href="/" className="mr-6 flex items-center space-x-2">
+            <span className="hidden font-bold sm:inline-block">
+              AI Amazona
+            </span>
+          </Link>
+          <nav className="flex items-center space-x-6 text-sm font-medium">
             <Link
-              href='/'
-              className='flex items-center'
+              href="/products"
+              className={`transition-colors hover:text-foreground/80 ${
+                pathname === '/products'
+                  ? 'text-foreground'
+                  : 'text-foreground/60'
+              }`}
             >
-              <Image 
-                src='/images/logo.png' 
-                alt='AI Amazona Logo' 
-                width={320}
-                height={80}
-                className='w-auto h-24'
-                priority
-              />
+              Products
+            </Link>
+            <Link
+              href="/categories"
+              className={`transition-colors hover:text-foreground/80 ${
+                pathname === '/categories'
+                  ? 'text-foreground'
+                  : 'text-foreground/60'
+              }`}
+            >
+              Categories
+            </Link>
+          </nav>
+        </div>
+        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+          <div className="w-full flex-1 md:w-auto md:flex-none">
+            <Link href="/cart" className="relative">
+              <ShoppingCart className="h-6 w-6" />
+              <CartBadge />
             </Link>
           </div>
-
-          {/* Main Navigation */}
-          <nav className='hidden md:flex flex-1 justify-center'>
-            <ul className='flex space-x-8'>
-              {navItems.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      'text-base font-medium transition-colors px-3 py-1 rounded-md',
-                      activePath === item.href
-                        ? 'text-gray-900 outline outline-2 outline-gray-900'
-                        : 'text-gray-700 hover:text-gray-900'
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          {/* Right Section */}
-          <div className='flex items-center gap-4'>
-            <CartBadge />
-            {/* Mobile menu button */}
-            <Button variant='ghost' size='icon' className='md:hidden'>
-              <Menu className='h-6 w-6' />
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <User className="h-6 w-6" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => signIn()}>
+                Sign In
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => signOut()}>
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
